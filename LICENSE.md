@@ -1,3 +1,6 @@
+ You may use, distribute and copy FAME under the terms of GNU General
+ Public License version 3, which is displayed below
+ 
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
