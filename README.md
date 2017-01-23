@@ -7,7 +7,7 @@ Take your STL-file and simulate the additive manufacturing process.
 
 ### How to run
 ```
-git clone https://github.com/wredenberg/FAME.git
+$ git clone https://github.com/wredenberg/FAME.git
 $ cd FAME
 $ python3 FAME.py ~/path/to/file.stl ~/path/to/file.par
 ```
