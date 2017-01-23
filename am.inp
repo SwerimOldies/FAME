@@ -1,0 +1,124 @@
+*include,input=geom.inp
+** 
+** MATERIALS
+** 
+*MATERIAL,NAME=buildMat
+*ELASTIC
+#elasticCold,0.3,20
+#elasticMiddle,0.3,500
+#elasticHot,0.3,1000
+*CREEP
+#creepAcold,#creepncold,0,20
+#creepAmiddle,#creepnmiddle,0,500
+#creepAhot,#creepnhot,0,1000
+*DENSITY
+#density
+*Specific Heat
+#specHeat,
+*Expansion
+#thermExpCold,20
+#thermExpHot,1500
+*CONDUCTIVITY
+#conductivity,0.
+*MATERIAL,NAME=plateMat
+*ELASTIC
+#elasticCold,0.3,20
+#elasticHot,0.3,1500
+*DENSITY
+#density
+*Specific Heat
+#specHeat,
+*Expansion
+#thermExpBot,20
+*CONDUCTIVITY
+#conductivity,0.
+*SOLID SECTION,MATERIAL=buildMat,ELSET=buildElements
+*SOLID SECTION,MATERIAL=plateMat,ELSET=buildPlateElements
+*BEAM SECTION,MATERIAL=plateMat,ELSET=beamBed,SECTION=RECT
+0.01,0.01
+1,0,0
+*Initial Conditions, type=TEMPERATURE
+build, #solidify
+*Initial Conditions, type=TEMPERATURE
+buildPlate, #sinkTemp
+***BOUNDARY
+**L1,1,3
+**L2,2,2
+**L2,3,3
+**L3,3,3
+*BOUNDARY
+nodeBed,1,6
+*************************************************************************
+*Step,INC=1000
+*STATIC
+1e-0,1,1e-10,
+*CONTROLS,PARAMETERS=TIME INCREMENTATION
+4,8,9,16,10,4,,10
+0.25,0.5,0.75,0.85,,,2.5,
+*NODE FILE,FREQUENCY=100000000
+ U,NT
+*EL FILE,FREQUENCY=100000000
+ S, E,ENER,PEEQ
+*END STEP
+**----------------------------------------------------------------------
+*Step,INC=1000
+*STATIC
+1e-0,1,1e-10,
+*MODEL CHANGE,TYPE=ELEMENT,REMOVE
+BUILDELEMENTS
+*NODE FILE,FREQUENCY=100000000
+ U,NT
+*EL FILE,FREQUENCY=100000000
+ S, E,ENER,PEEQ
+*END STEP
+******************************************
+*include,input=steps.inp
+******************************************
+******************************************
+** 
+** STEP: Cooldown
+** 
+*Step,INC=1000
+*HEAT TRANSFER,DELTMX=500
+1e-2,#coolDown,1e-10,
+*BOUNDARY,OP=NEW
+nodeBed,1,6
+*FILM
+bottomElements,F1,20,0.005
+*NODE FILE,FREQUENCY=1000000000
+ U,NT
+*EL FILE,FREQUENCY=1000000000
+ S, E,PEEQ
+*End Step
+*STEP
+*STATIC,TIME RESET
+1e-3,#coolDown,1e-10,
+*NODE FILE,FREQUENCY=1000000000
+ U,NT
+*EL FILE,FREQUENCY=1000000000
+ S, E,PEEQ
+*End Step
+*Step,INC=1000
+*VISCO,TIME RESET
+1e-2,#coolDown,1e-10,
+**
+** 
+** 
+** OUTPUT REQUESTS
+** 
+*NODE FILE,FREQUENCY=1000000000
+ U,NT
+*EL FILE,FREQUENCY=1000000000
+ S, E ,PEEQ
+*End Step
+**************************************************
+*Step,INC=10000
+*STATIC
+1e-5,1,1e-10,
+*MODEL CHANGE,TYPE=ELEMENT,REMOVE
+BUILDPLATEELEMENTS
+*NODE FILE,FREQUENCY=100000000
+ U,NT
+*EL FILE,FREQUENCY=100000000
+ S, E,PEEQ
+*End Step
