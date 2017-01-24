@@ -159,8 +159,9 @@ def adjustSTL(filename,feamesh,stlmesh,power=4,scale=1):
         v=stlmesh.v2[i] #one vertex
         if v[0]==xmin and zmax<v[2]:
             zmax=v[2]
-
-
+    
+    
+ 
     def adjust(vertex,scale=1):
         N=[] #list of node coordinates
         displacement=[] #nodal displacements        
@@ -168,16 +169,15 @@ def adjustSTL(filename,feamesh,stlmesh,power=4,scale=1):
         nodeNums+=feamesh.web2.getNodesCloseToCoord(vertex)
 
         nodeNums=fea.unique(nodeNums)
+        
         nodes=[feamesh.getNode(n) for n in nodeNums]
-        #naverage=np.array([0.0,0.0,0.0])
         for n in nodes:
             if n.coord[2]>zmax-tol: #not interested in nodes belonging to the build plate
-            #if n.coord[2]>-1000: #not interested in nodes belonging to the build plate
                 N.append((n.coord))
                 displacement.append((n.disp))
-                #naverage+=np.array(n.coord)
-        #naverage=naverage/len(N)
+
         N=np.array(N)
+
                 
         try:
             R=N-np.array(vertex) #the vectors from this vertex to all fea nodes
@@ -187,20 +187,19 @@ def adjustSTL(filename,feamesh,stlmesh,power=4,scale=1):
             return vertex
         inf=normalize([np.power(x,power) for x in Dist]) #influence weights
         
+        
         #only use the 10 closest nodes
-        #zipSorted=list(zip(*sorted(zip(Dist,displacement))))
-        #zipSorted=list(zip(*sorted(zip(Dist,displacement,N))))
         zipSorted=list(zip(*(zip(Dist,displacement,N))))
-        nodes2use=40
+        nodes2use=5
         dist_short=zipSorted[0][0:nodes2use]
         disp_short=zipSorted[1][0:nodes2use]
-        #N_short=(zipSorted[2][0:1][0])
-        #disp_temp=zipSorted[1][0:15]
-        inf_short=normalize([np.power(x,power) for x in dist_short]) #influence weights
+        N_short=zipSorted[2][0:nodes2use]
+
+
+        inf_short=[np.power(x,-power) for x in dist_short] #influence weights
+        inf_short=[i/sum(inf_short) for i in inf_short]
         
-        
-        adjustment=scale*np.dot(np.array(inf),np.array(displacement))        
-        #adjustment=scale*np.dot(np.array(inf_short),np.array(disp_short)) #multiply influence weights with the node dispplacements
+        adjustment=scale*np.dot(np.array(inf_short),np.array(disp_short))        
         
         if vertex[2]<zmax+tol: #vertices on the plate - build interface should not be adjusted in the z direction
             adjustment[2]=0
@@ -222,7 +221,7 @@ def adjustSTL(filename,feamesh,stlmesh,power=4,scale=1):
         if v[2]>zmax-tol:
             stlmesh.v2[i]=adjust(v,scale)
         
-
+    
     stlmesh.save(filename)
     
 
@@ -245,7 +244,7 @@ if __name__ == "__main__":
             geomFilename=a;
         if o in '-n':
             nominalFilename=a;
-            outFilename=nominalFilename+'_adjusted'
+            outFilename=nominalFilename[:-4]+'_adjusted.stl'
         if o in '-o':
             outFilename=a;
 
