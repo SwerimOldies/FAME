@@ -52,7 +52,7 @@ def readResults(filename,feamesh):
     file.close()
 
 
-def readGeom(filename):
+def readGeom(filename,d1=23,d2=27):
     nodes=[]
     elements=[]
     file=open(filename,'r')
@@ -101,13 +101,13 @@ def readGeom(filename):
             readingElementsets=True
             setname=line.split(',')[-1]
         
-    feamesh=fea.mesh(nodes,elements,d1=37,d2=41,margin=0.3) #create fea mesh
+    feamesh=fea.mesh(nodes,elements,d1=d1,d2=d2,margin=0.3) #create fea mesh
     feamesh.nsets=tempMesh.nsets
     feamesh.esets=tempMesh.esets
     return feamesh
     
 
-def adjustSTL(filename,feamesh,stlmesh,power=4,scale=1):
+def adjustSTL(filename,feamesh,stlmesh,power=4,scale=1,nodes2use=10):
     tol=1e-5
     def norm(v,n):
         sum=0
@@ -190,7 +190,7 @@ def adjustSTL(filename,feamesh,stlmesh,power=4,scale=1):
         
         #only use the 10 closest nodes
         zipSorted=list(zip(*(zip(Dist,displacement,N))))
-        nodes2use=5
+        
         dist_short=zipSorted[0][0:nodes2use]
         disp_short=zipSorted[1][0:nodes2use]
         N_short=zipSorted[2][0:nodes2use]
@@ -253,7 +253,7 @@ if __name__ == "__main__":
     #print(args)
     if(run):
         print('Reading geometry')
-        feamesh=readGeom(geomFilename)
+        feamesh=readGeom(geomFilename,d1=11,d2=17)
         print('Reading results')
         readResults(resultsFilename,feamesh)
         print('Reading STL')
