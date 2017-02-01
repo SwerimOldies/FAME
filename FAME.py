@@ -417,7 +417,6 @@ if __name__ == "__main__":
     calc(directory=directory,cpus=cpus)
     
     import post
-    #post.readGeom(directory+'/geom.inp',feamesh)
     
     os.chdir(directory)
     post.readResults('am.frd',mesh)

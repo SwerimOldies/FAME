@@ -32,15 +32,19 @@
            </widget>
           </item>
           <item>
-           <widget class="QWidget" name="widget_2" native="true"/>
+           <widget class="matplotWidget" name="inputSTLgraph" native="true"/>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
-             <widget class="QLineEdit" name="lineEdit_2"/>
+             <widget class="QLineEdit" name="inlineEdit">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_2">
+             <widget class="QPushButton" name="loadButton">
               <property name="text">
                <string>Load STL file</string>
               </property>
@@ -51,7 +55,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_3">
+         <widget class="QPushButton" name="computeButton">
           <property name="text">
            <string>Compute</string>
           </property>
@@ -67,12 +71,12 @@
            </widget>
           </item>
           <item>
-           <widget class="QWidget" name="widget" native="true"/>
+           <widget class="matplotWidget" name="adjustedSTLgraph" native="true"/>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
-             <widget class="QPushButton" name="pushButton">
+             <widget class="QPushButton" name="exportButton">
               <property name="text">
                <string>Export</string>
               </property>
@@ -97,7 +101,7 @@
      <x>0</x>
      <y>0</y>
      <width>747</width>
-     <height>20</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -144,6 +148,14 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>matplotWidget</class>
+   <extends>QWidget</extends>
+   <header>matplotwidgetFile</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

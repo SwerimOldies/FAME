@@ -6,29 +6,41 @@ import fameQT
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+from matplotwidgetFile import matplotWidget
+
 class plotter(QObject): #class to plot the stress strain data
     def __init__(self):
         QObject.__init__(self)
 
-    def plot(self,name,x,y): #generic plot routine
-        form.Graph.canvas.ax.cla()
-        form.Graph.canvas.ax.set_xlabel('strain / %')
-        form.Graph.canvas.ax.set_ylabel('stress / MPa')
-        form.Graph.canvas.ax.set_title(name)
-        form.Graph.canvas.ax.plot(x,y)
-        form.Graph.canvas.draw()
+    def plot(self,name,which='in'): #generic plot routine
+        print(name)
+        from stl import mesh
+        from mpl_toolkits import mplot3d
+        from matplotlib import pyplot
 
-    def plot_material(self,mat): #prepare the stress strain curve for plotting
-        x=[0]
-        y=[0]
-        yield_strain=mat.stress[0]/float(mat.E);
-        x.append(yield_strain)
-        y.append(mat.stress[0])
-        for i in range(len(mat.strain)):
-            x.append(mat.strain[i]+mat.stress[i]/float(mat.E)) #add the elatic strain component
-            y.append(mat.stress[i])
+        # Create a new plot
+        if which=='in':
+            figure = form.inputSTLgraph.canvas.fig
+            graph=form.inputSTLgraph
+        elif which=='out':
+            figure = form.adjustedSTLgraph.canvas.fig
+            graph=form.adjustedSTLgraph
+        else:
+            print('Error - is it in or out?')
+        axes = mplot3d.Axes3D(figure)
 
-        self.plot(mat.name,[i*100 for i in x],[i/1e6 for i in y])
+        # Load the STL files and add the vectors to the plot
+        your_mesh = mesh.Mesh.from_file(name)
+        axes.add_collection3d(mplot3d.art3d.Poly3DCollection(your_mesh.vectors))
+
+        # Auto scale to the mesh size
+        scale = your_mesh.points.flatten(-1)
+        axes.auto_scale_xyz(scale, scale, scale)
+
+        # Show the plot to the screen
+        graph.canvas.ax.cla()
+        graph.canvas.ax.set_title(name)
+        graph.canvas.draw()
 
 
 class MainWindow(QMainWindow,fameQT.Ui_MainWindow):
@@ -40,14 +52,36 @@ class MainWindow(QMainWindow,fameQT.Ui_MainWindow):
         
         
         #GUI connections
+        self.loadButton.clicked.connect(self.loadSTL)
+        self.computeButton.clicked.connect(self.compute)
         #self.exportButton.clicked.connect(self.export) #connect export button to save as dialog
-        #self.availtagsList.itemClicked.connect(self.availTagClicked)
-        #self.seltagsList.itemClicked.connect(self.selTagClicked)
-        #self.materialList.itemClicked.connect(self.materialClicked)
-        #self.deleteButton.clicked.connect(self.v.exec_) #connect delete button with delete warning
-        #self.v.accepted.connect(self.delete) #if delete warning is clicked DO IT then run DELETE()
-    
 
+    def loadSTL(self):
+        self.inputfname = QFileDialog.getOpenFileName(self, 'Choose input STL...',  '',"STL files (*.STL *.stl)")
+        try:
+            plot.plot(self.inputfname,which='in')
+            form.inlineEdit.setText(self.inputfname)
+        except:
+            pass    
+    def compute(self):
+        
+        name=self.inputfname.split('/')[-1]
+
+        parameters=FAME.readParameters('slm.par')
+        print(parameters)
+        (directory,mesh)=FAME.run(parameters,name)
+        FAME.calc(directory=directory,cpus=1)
+        
+        import post,os,shutil
+        
+        os.chdir(directory)
+        post.readResults('am.frd',mesh)
+        stlmesh=post.readSTL(name)
+        print('Adjusting STL')
+        post.adjustSTL(name[:-4]+'_adjusted.stl',mesh,stlmesh,scale=1,power=4)
+        shutil.copy(name[:-4]+'_adjusted.stl','../'+name[:-4]+'_adjusted.stl')  
+        plot.plot(name=name[:-4]+'_adjusted.stl',which='out')
+        #plot.plot(name=self.inputfname[:-4]+'_adjusted.stl',which='out')
 
 app = QApplication(sys.argv)
 form = MainWindow()
