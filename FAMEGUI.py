@@ -47,14 +47,18 @@ class MainWindow(QMainWindow,fameQT.Ui_MainWindow):
     def __init__(self, parent=None):
         super(MainWindow,self).__init__(parent)
         self.setupUi(self)
-        
-        #self.v=warning('really delete?')
-        
-        
+
         #GUI connections
         self.loadButton.clicked.connect(self.loadSTL)
-        self.computeButton.clicked.connect(self.compute)
-        #self.exportButton.clicked.connect(self.export) #connect export button to save as dialog
+        
+        self.stdoutOld=sys.stdout
+        sys.stdout = self.EmittingStream()
+        sys.stdout.textWritten.connect(self.textBrowser.append)
+        
+        self.sThread=self.sub_thread()
+        self.computeButton.clicked.connect(self.sThread.start)
+        self.sThread.started.connect(self.running)
+        self.sThread.finished.connect(self.completed)
 
     def loadSTL(self):
         self.inputfname = QFileDialog.getOpenFileName(self, 'Choose input STL...',  '',"STL files (*.STL *.stl)")
@@ -65,29 +69,39 @@ class MainWindow(QMainWindow,fameQT.Ui_MainWindow):
             pass    
     def compute(self):
         import post,os,shutil
-        #name=self.inputfname.split('/')[-1]
         name=self.inputfname
         parameters=FAME.readParameters('slm.par')
-        #print(parameters)
         dir_path = os.path.dirname(os.path.realpath(__file__)) #directory where the FAME.py file resides
         (directory,mesh)=FAME.run(parameters,name,dir_path)
         FAME.calc(directory=directory,cpus=1)
         
-        
-        
-        #os.chdir(directory)
         post.readResults(directory+'/am.frd',mesh)
         stlmesh=post.readSTL(name)
         print('Adjusting STL')
         post.adjustSTL(os.path.basename(name)[:-4]+'_adjusted.stl',mesh,stlmesh,scale=1,power=4)
-        #shutil.copy(name[:-4]+'_adjusted.stl','../'+name[:-4]+'_adjusted.stl')  
         plot.plot(name=name[:-4]+'_adjusted.stl',which='out')
-        #plot.plot(name=self.inputfname[:-4]+'_adjusted.stl',which='out')
+ 
+    def running(self): #update gui at job start
+        self.computeButton.setEnabled(False)
+        self.computeButton.setText('Running...')
 
+        
+    def completed(self): #update gui at job finish
+        self.computeButton.setEnabled(True)
+        self.computeButton.setText('Compute')
+        
+    class EmittingStream(QObject):
+        textWritten = Signal(str)
+        def write(self, text):
+            self.textWritten.emit(str(text).rstrip('\n'))
+            
+    class sub_thread (QThread):
+        def run(self):
+            form.compute()
+
+ 
 app = QApplication(sys.argv)
 form = MainWindow()
-
 plot=plotter()
-
 form.show() #show main window
 app.exec_()
