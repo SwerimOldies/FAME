@@ -64,22 +64,23 @@ class MainWindow(QMainWindow,fameQT.Ui_MainWindow):
         except:
             pass    
     def compute(self):
-        
-        name=self.inputfname.split('/')[-1]
-
+        import post,os,shutil
+        #name=self.inputfname.split('/')[-1]
+        name=self.inputfname
         parameters=FAME.readParameters('slm.par')
-        print(parameters)
-        (directory,mesh)=FAME.run(parameters,name)
+        #print(parameters)
+        dir_path = os.path.dirname(os.path.realpath(__file__)) #directory where the FAME.py file resides
+        (directory,mesh)=FAME.run(parameters,name,dir_path)
         FAME.calc(directory=directory,cpus=1)
         
-        import post,os,shutil
         
-        os.chdir(directory)
-        post.readResults('am.frd',mesh)
+        
+        #os.chdir(directory)
+        post.readResults(directory+'/am.frd',mesh)
         stlmesh=post.readSTL(name)
         print('Adjusting STL')
-        post.adjustSTL(name[:-4]+'_adjusted.stl',mesh,stlmesh,scale=1,power=4)
-        shutil.copy(name[:-4]+'_adjusted.stl','../'+name[:-4]+'_adjusted.stl')  
+        post.adjustSTL(os.path.basename(name)[:-4]+'_adjusted.stl',mesh,stlmesh,scale=1,power=4)
+        #shutil.copy(name[:-4]+'_adjusted.stl','../'+name[:-4]+'_adjusted.stl')  
         plot.plot(name=name[:-4]+'_adjusted.stl',which='out')
         #plot.plot(name=self.inputfname[:-4]+'_adjusted.stl',which='out')
 

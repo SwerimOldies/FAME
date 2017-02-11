@@ -1,7 +1,7 @@
 *parameter
 creepnmiddle=6.13034758742
 solidify=749.51668103
-resolution=90
+resolution=50
 creepAhot=1.0001492236e-20
 creepncold=3.8072475794
 thermExpCold=1.3e-05

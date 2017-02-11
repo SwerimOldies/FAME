@@ -211,7 +211,7 @@ C
     """)
     file.close()
     
-def run(parameters,name):
+def run(parameters,name,dir_path):
     import uuid
     uid=str(uuid.uuid4())
     (vol,bounding_box,scale,shift)=readVoxels(name,parameters['resolution'])
@@ -345,24 +345,25 @@ def run(parameters,name):
     
     import shutil
     import os
-    directory=name+'_'+uid
+    filename=os.path.basename(name)
+    print('filename',filename)
+    directory=filename+'_'+uid
     if not os.path.exists(directory):
         os.makedirs(directory)
-    os.chdir(directory)
+        cwd=os.getcwd()
+
     
-    #shutil.copy('../am.inp','am.inp')
-    parseInput('../am.inp','am.inp',parameters)
-    shutil.copy('../'+name,name)
+    parseInput(dir_path+'/am.inp',directory+'/am.inp',parameters)
+    shutil.copy(name,directory+'/')
     
-    try: #parameter file may not exist
-        shutil.copy('../'+name+'.par',name+'.par')        
+    try: #parameter file may not exist   
+        shutil.copy(name+'.par',directory+'/'+name+'.par')
     except:
         pass
     
     
-    writeMesh(mesh,'geom.inp')
-    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename='steps.inp',dwell=dwell,conductivity=parameters['sinkCond'],temp=parameters['sinkTemp'],onlyHeat=False)
-    os.chdir('../')
+    writeMesh(mesh,directory+'/geom.inp')
+    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=directory+'/steps.inp',dwell=dwell,conductivity=parameters['sinkCond'],temp=parameters['sinkTemp'],onlyHeat=False)
     return (directory,mesh)
 
 def parseInput(infilename,outfilename,parameters): #read infile and replace all parameters with actual numbers
@@ -409,21 +410,17 @@ if __name__ == "__main__":
         if o in '-c':
             cpus=int(a)
     
-    
+    dir_path = os.path.dirname(os.path.realpath(__file__)) #directory where the FAME.py file resides
 
     parameters=readParameters(parameterFilename)
-    print(parameters)
-    (directory,mesh)=run(parameters,name)
+    (directory,mesh)=run(parameters,name,dir_path)
     calc(directory=directory,cpus=cpus)
     
     import post
     
-    os.chdir(directory)
-    post.readResults('am.frd',mesh)
+    post.readResults(directory+'/am.frd',mesh)
     stlmesh=post.readSTL(name)
     print('Adjusting STL')
-    post.adjustSTL(name[:-4]+'_adjusted.stl',mesh,stlmesh,scale=1,power=4)
-    shutil.copy(name[:-4]+'_adjusted.stl','../'+name[:-4]+'_adjusted.stl')   
+    post.adjustSTL(os.path.basename(name)[:-4]+'_adjusted.stl',mesh,stlmesh,scale=1,power=4)
     
-
         
