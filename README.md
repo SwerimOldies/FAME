@@ -9,7 +9,7 @@ Take your STL-file and simulate the additive manufacturing process.
 ```
 $ git clone https://github.com/wredenberg/FAME.git
 $ cd FAME
-$ python3 FAME.py ~/path/to/file.stl ~/path/to/file.par
+$ python3 FAME.py -i ~/path/to/file.stl -p ~/path/to/file.par
 ```
 
 ### Packages required
