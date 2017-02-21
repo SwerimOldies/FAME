@@ -47,9 +47,12 @@ class MainWindow(QMainWindow,fameQT.Ui_MainWindow):
     def __init__(self, parent=None):
         super(MainWindow,self).__init__(parent)
         self.setupUi(self)
+        
+        self.exportButton.setEnabled(False)
 
         #GUI connections
         self.loadButton.clicked.connect(self.loadSTL)
+        self.exportButton.clicked.connect(self.exportSTL)
         
         self.stdoutOld=sys.stdout
         sys.stdout = self.EmittingStream()
@@ -67,19 +70,35 @@ class MainWindow(QMainWindow,fameQT.Ui_MainWindow):
             form.inlineEdit.setText(self.inputfname)
         except:
             pass    
+    
+    def exportSTL(self):
+        exportName = QFileDialog.getSaveFileName(self,'Export adjusted STL as')
+        
+        import shutil
+        try:
+            shutil.copy(self.resultPath,exportName)
+        except:
+            pass
+        
     def compute(self):
+        self.exportButton.setEnabled(False)
         import post,os,shutil
         name=self.inputfname
         parameters=FAME.readParameters('slm.par')
         dir_path = os.path.dirname(os.path.realpath(__file__)) #directory where the FAME.py file resides
         (directory,mesh)=FAME.run(parameters,name,dir_path)
+        
+        
         FAME.calc(directory=directory,cpus=1)
         
-        post.readResults(directory+'/am.frd',mesh)
+        post.readResults(os.path.relpath(directory+'/am.frd'),mesh)
         stlmesh=post.readSTL(name)
         print('Adjusting STL')
-        post.adjustSTL(os.path.basename(name)[:-4]+'_adjusted.stl',mesh,stlmesh,scale=1,power=4)
-        plot.plot(name=name[:-4]+'_adjusted.stl',which='out')
+        self.resultPath=os.path.relpath(directory+'/'+os.path.basename(name)[:-4]+'_adjusted.stl')
+        #print(resultPath)
+        post.adjustSTL(self.resultPath,mesh,stlmesh,scale=1,power=4)
+        plot.plot(name=self.resultPath,which='out')
+        self.exportButton.setEnabled(True)
  
     def running(self): #update gui at job start
         self.computeButton.setEnabled(False)

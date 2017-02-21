@@ -278,8 +278,6 @@ def run(parameters,name,dir_path):
         if z>zmax:
             zmax=z
     
-        
-    #layersInPlate=int((zmax-zmin)*scale[2])
 
     boxSize=[xmax-xmin,ymax-ymin,zmax-zmin]
     
@@ -289,13 +287,10 @@ def run(parameters,name,dir_path):
         if topOfBuild<node.coord[2]:
             topOfBuild=node.coord[2]
     
-    #bottomANDtop=mesh.getNodesWithIn(-1000000000,100000000000,-1000000000,100000000000,zmin-1e-5,zmin+1e-5)
     buildBottom=mesh.getNodesWithIn(-1000000000,100000000000,-1000000000,100000000000,+zmin+boxSize[2]-1e-5,+zmin+boxSize[2]+1e-5)
     buildPlate=mesh.getNodesWithIn(-1000000000,100000000000,-1000000000,100000000000,zmin-1e-5,zmin+boxSize[2]+1e-5)
     buildPlateElements=mesh.getElementsWithNodes(buildPlate,any=True)
-    #buildPlateElements=list(set(buildPlateElements)-set(layer_0))
     top=mesh.getNodesWithIn(-1000000000,100000000000,-1000000000,100000000000,topOfBuild-1e-5,topOfBuild+1e-5)
-    #allnodes=[n.num for n in mesh.nodes]
     
     
     bottomNodes=mesh.getNodesWithIn(-1000000000,100000000000,-1000000000,100000000000,zmin-1e-5,zmin+1e-5) #the very bottom nodes of the plate
@@ -353,17 +348,17 @@ def run(parameters,name,dir_path):
         cwd=os.getcwd()
 
     
-    parseInput(dir_path+'/am.inp',directory+'/am.inp',parameters)
-    shutil.copy(name,directory+'/')
+    parseInput(os.path.normpath(dir_path+'/am.inp'),os.path.normpath(directory+'/am.inp'),parameters)
+    shutil.copy(os.path.normpath(name),os.path.normpath(directory+'/'))
     
     try: #parameter file may not exist   
-        shutil.copy(name+'.par',directory+'/'+name+'.par')
+        shutil.copy(os.path.normpath(name+'.par'),os.path.normpath(directory+'/'+name+'.par'))
     except:
         pass
     
     
-    writeMesh(mesh,directory+'/geom.inp')
-    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=directory+'/steps.inp',dwell=dwell,conductivity=parameters['sinkCond'],temp=parameters['sinkTemp'],onlyHeat=False)
+    writeMesh(mesh,os.path.normpath(directory+'/geom.inp'))
+    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=os.path.normpath(directory+'/steps.inp'),dwell=dwell,conductivity=parameters['sinkCond'],temp=parameters['sinkTemp'],onlyHeat=False)
     return (directory,mesh)
 
 def parseInput(infilename,outfilename,parameters): #read infile and replace all parameters with actual numbers
@@ -418,9 +413,11 @@ if __name__ == "__main__":
     
     import post
     
-    post.readResults(directory+'/am.frd',mesh)
+    post.readResults(os.path.normpath(directory+'/am.frd'),mesh)
     stlmesh=post.readSTL(name)
     print('Adjusting STL')
-    post.adjustSTL(os.path.basename(name)[:-4]+'_adjusted.stl',mesh,stlmesh,scale=1,power=4)
-    
+    resultPath=os.path.relpath(directory+'/'+os.path.basename(name)[:-4]+'_adjusted.stl')
+    post.adjustSTL(resultPath,mesh,stlmesh,scale=1,power=4)
+
+    shutil.copy(resultPath,os.path.relpath(os.path.basename(name)[:-4]+'_adjusted.stl'))
         
