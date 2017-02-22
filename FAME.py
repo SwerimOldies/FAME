@@ -379,7 +379,8 @@ def calc(directory,cpus=1): #Run calculix.
     print('Solving..')
     import os
     os.chdir(directory)
-    os.system('export OMP_NUM_THREADS='+str(cpus))
+    #os.system('export OMP_NUM_THREADS='+str(cpus))
+    os.environ['OMP_NUM_THREADS']=str(cpus)
     os.system('ccx am > ccx_output.txt')
     os.chdir('../')
     
