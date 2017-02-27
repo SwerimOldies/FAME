@@ -100,8 +100,14 @@ class Ui_MainWindow(object):
         self.actionExport_deformed_STL.setObjectName(_fromUtf8("actionExport_deformed_STL"))
         self.actionExit = QtGui.QAction(MainWindow)
         self.actionExit.setObjectName(_fromUtf8("actionExit"))
+        self.actionAbout = QtGui.QAction(MainWindow)
+        self.actionAbout.setObjectName(_fromUtf8("actionAbout"))
+        self.actionSettings = QtGui.QAction(MainWindow)
+        self.actionSettings.setObjectName(_fromUtf8("actionSettings"))
         self.menuFile.addAction(self.actionExport_deformed_STL)
         self.menuFile.addAction(self.actionExit)
+        self.menuHelp.addAction(self.actionAbout)
+        self.menuSettings.addAction(self.actionSettings)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuSettings.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
@@ -122,5 +128,7 @@ class Ui_MainWindow(object):
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar", None))
         self.actionExport_deformed_STL.setText(_translate("MainWindow", "Export deformed STL", None))
         self.actionExit.setText(_translate("MainWindow", "Exit", None))
+        self.actionAbout.setText(_translate("MainWindow", "About", None))
+        self.actionSettings.setText(_translate("MainWindow", "Settings", None))
 
 from matplotwidgetFile import matplotWidget

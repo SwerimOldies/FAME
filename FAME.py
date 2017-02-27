@@ -173,6 +173,8 @@ def readParameters(filename):
 
             if p=='resolution':
                 parameters['resolution']=int(v)
+            elif p=='comment':
+                parameters[p]=v
             else:
                 parameters[p]=float(v)
         except:
