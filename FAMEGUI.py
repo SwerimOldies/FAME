@@ -70,7 +70,10 @@ class settings(QDialog,settings.Ui_settings): #dialog for setting parameters
     
     def setTable(self): #populate the qtable with parameters
         self.setWindowTitle('Settings - '+os.path.basename(self.lastSettingsFile))
-        self.nameEdit.setText(self.parameters['comment'])
+        if 'comment' in self.parameters:
+            self.nameEdit.setText(self.parameters['comment'])
+        else:
+            self.nameEdit.setText('')
         self.tableWidget.setRowCount(len(self.parameters)-1) #set the number of rows equal to the number of parameter items
         i=0
         for p in self.parameters.keys():
@@ -80,9 +83,18 @@ class settings(QDialog,settings.Ui_settings): #dialog for setting parameters
                 i+=1
         
     def readSettings(self,filename=None): #read settings from file
-        filename = os.path.abspath(filename)
+        try:
+            os.path.exists(filename)
+        except:
+            filename = os.path.abspath(os.path.dirname(os.path.realpath(__file__))+'/default.par')
+        '''    
         if not os.path.exists(filename): #read default settings file if we cant find the desired file
             filename = os.path.abspath(os.path.dirname(os.path.realpath(__file__))+'/default.par')
+            print(filename)
+        else:
+            filename = os.path.abspath(filename)
+        '''
+        print(filename)
         self.parameters=FAME.readParameters(filename)
         self.lastSettingsFile=filename
         self.setWindowTitle('Settings - '+os.path.basename(self.lastSettingsFile))
@@ -111,6 +123,10 @@ class settings(QDialog,settings.Ui_settings): #dialog for setting parameters
         filename=QFileDialog.getOpenFileName(self, 'Open settings file...',  '',"FAME settings files (*.par)")
         self.readSettings(filename)
         self.setTable()
+        
+        sets=QSettings('Swerea','FAME')
+        sets.setValue('settingsfile', self.lastSettingsFile)
+        del(sets)
     
     def newSettings(self):
         self.parameters={'comment':'new'}
