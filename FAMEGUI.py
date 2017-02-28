@@ -84,7 +84,8 @@ class settings(QDialog,settings.Ui_settings): #dialog for setting parameters
         
     def readSettings(self,filename=None): #read settings from file
         try:
-            os.path.exists(filename)
+            if not os.path.exists(filename):
+                raise Exception('Doesn\'t exist')
         except:
             filename = os.path.abspath(os.path.dirname(os.path.realpath(__file__))+'/default.par')
         '''    
