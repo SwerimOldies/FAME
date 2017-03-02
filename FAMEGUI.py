@@ -2,12 +2,22 @@
 
 import FAME,sys,os
 import fameQT
+import about
 import settings
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from matplotwidgetFile import matplotWidget
+
+class aboutDialog(QDialog,about.Ui_aboutDialog):
+    def __init__(self, parent=None):
+        super(aboutDialog,self).__init__(parent)
+        self.setupUi(self)
+        self.okButton.clicked.connect(self.close)
+    def appear(self):
+        self.show()
+
 
 class plotter(QObject): #class to plot the stress strain data
     def __init__(self):
@@ -88,14 +98,7 @@ class settings(QDialog,settings.Ui_settings): #dialog for setting parameters
                 raise Exception('Doesn\'t exist')
         except:
             filename = os.path.abspath(os.path.dirname(os.path.realpath(__file__))+'/default.par')
-        '''    
-        if not os.path.exists(filename): #read default settings file if we cant find the desired file
-            filename = os.path.abspath(os.path.dirname(os.path.realpath(__file__))+'/default.par')
-            print(filename)
-        else:
-            filename = os.path.abspath(filename)
-        '''
-        print(filename)
+
         self.parameters=FAME.readParameters(filename)
         self.lastSettingsFile=filename
         self.setWindowTitle('Settings - '+os.path.basename(self.lastSettingsFile))
@@ -166,6 +169,8 @@ class MainWindow(QMainWindow,fameQT.Ui_MainWindow):
         #GUI connections
         self.loadButton.clicked.connect(self.loadSTL)
         self.exportButton.clicked.connect(self.exportSTL)
+        self.actionExit.triggered.connect(app.quit) #connect meny->exit to quit
+
         
         self.stdoutOld=sys.stdout
         sys.stdout = self.EmittingStream()
@@ -236,9 +241,10 @@ class MainWindow(QMainWindow,fameQT.Ui_MainWindow):
 app = QApplication(sys.argv)
 settings=settings()
 form = MainWindow()
-
+about=aboutDialog()
 
 form.actionSettings.triggered.connect(settings.appear)
+form.actionAbout.triggered.connect(about.appear) #connect the about action to the about dialog
 
 plot=plotter()
 form.show() #show main window
