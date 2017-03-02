@@ -62,21 +62,32 @@ class settings(QDialog,settings.Ui_settings): #dialog for setting parameters
         self.lastSettingsFile=sets.value('settingsfile')
         del(sets)
         self.readSettings(self.lastSettingsFile)
+        self.changeReceptive=False
         
-        
-        #self.finished.connect(self.returnParameters())
+        #connections
         self.saveButton.clicked.connect(self.save)
         self.saveAsButton.clicked.connect(self.saveAs)
         self.openButton.clicked.connect(self.openSettings)
         self.newButton.clicked.connect(self.newSettings)
         self.rowButton.clicked.connect(self.newRow)
+        self.tableWidget.cellChanged.connect(self.changed) #if the settings change
+        self.nameEdit.textChanged.connect(self.changed)#if the settings change
+        
+    def changed(self): #run this whenever the settings change
+        if self.changeReceptive:
+            self.setWindowTitle('Settings - '+os.path.basename(self.lastSettingsFile)+'*')
+    def resetChanged(self): #run this whenever the settings are nolonger changed
+        if self.changeReceptive:
+            self.setWindowTitle('Settings - '+os.path.basename(self.lastSettingsFile))
         
         
         
     def appear(self):
         self.setTable()
-            
         self.show()
+        
+        self.changeReceptive=True
+        self.resetChanged()
     
     def setTable(self): #populate the qtable with parameters
         self.setWindowTitle('Settings - '+os.path.basename(self.lastSettingsFile))
@@ -93,6 +104,7 @@ class settings(QDialog,settings.Ui_settings): #dialog for setting parameters
                 i+=1
         
     def readSettings(self,filename=None): #read settings from file
+        self.changeReceptive=False
         try:
             if not os.path.exists(filename):
                 raise Exception('Doesn\'t exist')
@@ -102,6 +114,7 @@ class settings(QDialog,settings.Ui_settings): #dialog for setting parameters
         self.parameters=FAME.readParameters(filename)
         self.lastSettingsFile=filename
         self.setWindowTitle('Settings - '+os.path.basename(self.lastSettingsFile))
+        self.changeReceptive=True
         
     def save(self,filename,saveAs=False):
         self.parameters=self.scrape()#read parameters from dialog
@@ -117,7 +130,7 @@ class settings(QDialog,settings.Ui_settings): #dialog for setting parameters
         sets.setValue('settingsfile', self.lastSettingsFile)
         del(sets)
         
-        self.setWindowTitle('Settings - '+os.path.basename(self.lastSettingsFile))
+        self.resetChanged()
  
     def saveAs(self):
         filename=QFileDialog.getSaveFileName(self,'Save settings as')
@@ -131,11 +144,14 @@ class settings(QDialog,settings.Ui_settings): #dialog for setting parameters
         sets=QSettings('Swerea','FAME')
         sets.setValue('settingsfile', self.lastSettingsFile)
         del(sets)
+        
+        self.resetChanged()
     
     def newSettings(self):
         self.parameters={'comment':'new'}
         self.lastSettingsFile='new.par'
         self.setTable()
+        
         
     
     def scrape(self):
@@ -153,6 +169,8 @@ class settings(QDialog,settings.Ui_settings): #dialog for setting parameters
     
     def newRow(self):
         self.tableWidget.setRowCount(self.tableWidget.rowCount()+1)
+        
+
     
     def returnParameters(self):
         print('destroy')
@@ -180,6 +198,7 @@ class MainWindow(QMainWindow,fameQT.Ui_MainWindow):
         self.computeButton.clicked.connect(self.sThread.start)
         self.sThread.started.connect(self.running)
         self.sThread.finished.connect(self.completed)
+
 
     def loadSTL(self):
         self.inputfname = QFileDialog.getOpenFileName(self, 'Choose input STL...',  '',"STL files (*.STL *.stl)")
@@ -232,6 +251,9 @@ class MainWindow(QMainWindow,fameQT.Ui_MainWindow):
         textWritten = Signal(str)
         def write(self, text):
             self.textWritten.emit(str(text).rstrip('\n'))
+        
+        def flush(self):
+            pass
             
     class sub_thread (QThread):
         def run(self):
