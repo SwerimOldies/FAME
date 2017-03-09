@@ -72,13 +72,15 @@ class settings(QDialog,settings.Ui_settings): #dialog for setting parameters
         self.rowButton.clicked.connect(self.newRow)
         self.tableWidget.cellChanged.connect(self.changed) #if the settings change
         self.nameEdit.textChanged.connect(self.changed)#if the settings change
-        
+
     def changed(self): #run this whenever the settings change
         if self.changeReceptive:
             self.setWindowTitle('Settings - '+os.path.basename(self.lastSettingsFile)+'*')
+            self.changed=True
     def resetChanged(self): #run this whenever the settings are nolonger changed
         if self.changeReceptive:
             self.setWindowTitle('Settings - '+os.path.basename(self.lastSettingsFile))
+            self.changed=False
         
         
         
@@ -171,9 +173,24 @@ class settings(QDialog,settings.Ui_settings): #dialog for setting parameters
         self.tableWidget.setRowCount(self.tableWidget.rowCount()+1)
         
 
+    def closeEvent(self, evnt): #when the user tries to close the settings dialog
+        if self.changed:
+            message=QMessageBox()
+            message.setText("The settings have been modified.");
+            message.setInformativeText("Do you want to save your changes?");
+            message.addButton(QMessageBox.Save)
+            message.addButton(QMessageBox.Discard);
+            message.addButton(QMessageBox.Cancel);
+            message.setDefaultButton(QMessageBox.Save);
+            ret = message.exec();
+            if ret==QMessageBox.Save:
+                self.save(self.lastSettingsFile)
+            elif ret==QMessageBox.Cancel:
+                evnt.ignore()
+            else:
+                print('Settings discarded')
     
-    def returnParameters(self):
-        print('destroy')
+    
         
 
 
