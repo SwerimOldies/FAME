@@ -1,0 +1,3 @@
+[submodule "stltovoxel"]
+	path = stltovoxel
+	url = https://github.com/wredenberg/stltovoxel.git
