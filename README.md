@@ -7,7 +7,7 @@ Take your STL-file and simulate the additive manufacturing process.
 
 ### How to run
 ```
-$ git clone https://github.com/wredenberg/FAME.git
+$ git clone --recursive https://github.com/wredenberg/FAME.git
 $ cd FAME
 $ python3 FAME.py -i ~/path/to/file.stl -p ~/path/to/file.par
 ```
@@ -18,3 +18,4 @@ $ python3 FAME.py -i ~/path/to/file.stl -p ~/path/to/file.par
 * python3-numpy
 * numpy-stl (installed with pip3)
 * calculix-ccx
+* pyqt4
