@@ -1,29 +1,34 @@
 [DEBREATE-0.7.13]
 <<CTRL>>
 Package: FAME
-Version: 1.0
+Version: 0.6
 Maintainer: Fredrik Wredenberg <fredrik.wredenberg@swerea.se>
 Section: science
-Source: https://github.com/wredenberg/FAME
+Source: https://github.com/swerea/FAME
 Architecture: all
 Priority: optional
-Depends: python3, python3-numpy, python3-pil, calculix-ccx
+Depends: python3, python3-numpy, python3-pil, calculix-ccx, python3-pyqt4
 Description: FAME   Free Additive Manufacturing Enhancer
  Takes an STL-file and simulates the AM build process using Calculix and outputs an adjusted STL-file.
 
 <</CTRL>>
 <<FILES>>
 1
-/home/fredrik/FAME/FAME.dbp -> FAME.dbp -> /opt/FAME
+/home/fredrik/FAME/default.par -> default.par -> /opt/FAME
 /home/fredrik/FAME/FAME.py* -> FAME.py -> /opt/FAME
 /home/fredrik/FAME/LICENSE.md -> LICENSE.md -> /opt/FAME
 /home/fredrik/FAME/README.md -> README.md -> /opt/FAME
 /home/fredrik/FAME/am.inp -> am.inp -> /opt/FAME
 /home/fredrik/FAME/fea.py -> fea.py -> /opt/FAME
 /home/fredrik/FAME/post.py -> post.py -> /opt/FAME
-/home/fredrik/FAME/slm.par -> slm.par -> /opt/FAME
 /home/fredrik/FAME/stltovoxel -> stltovoxel -> /opt/FAME
 /home/fredrik/FAME/testArtifact.stl -> testArtifact.stl -> /opt/FAME
+/home/fredrik/FAME/fame.png -> fame.png -> /usr/share/pixmaps/
+/home/fredrik/FAME/FAMEGUI.py* -> FAMEGUI.py -> /opt/FAME/
+/home/fredrik/FAME/settings.py -> settings.py -> /opt/FAME/
+/home/fredrik/FAME/matplotwidgetFile.py -> matplotwidgetFile.py -> /opt/FAME/
+/home/fredrik/FAME/fameQT.py* -> fameQT.py -> /opt/FAME/
+/home/fredrik/FAME/about.py -> about.py -> /opt/FAME/
 <</FILES>>
 <<SCRIPTS>>
 <<PREINST>>
@@ -33,7 +38,9 @@ Description: FAME   Free Additive Manufacturing Enhancer
 1
 #! /bin/bash -e
 
-ln -fs "/opt/FAME/FAME.py" "/usr/local/bin//FAME"
+ln -fs "/opt/FAME/FAME.py" "/usr/local/bin/FAME"
+ln -fs "/opt/FAME/FAMEGUI.py" "/usr/local/bin/FAMEGUI"
+pip3 install numpy-stl
 <</POSTINST>>
 <<PRERM>>
 1
@@ -729,7 +736,16 @@ Public License instead of this License.  But first, please read
 <http://www.gnu.org/philosophy/why-not-lgpl.html>.
 <</COPYRIGHT>>
 <<MENU>>
-0
+1
+Name=FAME
+Version=1.0
+Exec=FAMEGUI
+Icon=fame.png
+Type=Application
+Terminal=false
+StartupNotify=true
+Encoding=UTF-8
+Categories=Utility;
 <</MENU>>
 <<BUILD>>
 0
