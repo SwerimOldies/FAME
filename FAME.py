@@ -143,7 +143,7 @@ bottomNodes,1,3
         file.write('*FILM\n')
         for s in surf.keys():
             for f in surf[s]:
-                if not s in mesh.esets['buildPlateElements'] and f==1:
+                if not ((s in mesh.esets['buildPlateElements']) and (f==1)): #the bottom of the build plate may have a different condition
                     file.write(str(s)+',F'+str(f)+','+str(powderTemp)+','+str(conductivity)+'\n')
         file.write('bottomElements,F1'+','+str(temp)+','+str(conductivity)+'\n')
         file.write("""
