@@ -259,7 +259,21 @@ class mesh:
             if self.isSurfaceElem(e.num):
                 surf.append(e.num)
         return surf
-
+    
+    #get surface elements and their surface faces
+    def getSurfaceElementsWithFaces(self):
+        surfElements=self.getFullFaceSurfaceElements() #all surface elements
+        surfElementsDic={} #dictionary of all surface elements and their surface face numbers (FEA numbering)
+        for enum in surfElements:
+            surfFaces=[] #all surface faces of this element
+            faces=self.getElement(enum).getFace(0) #all faces of element enum
+            i=0
+            for f in faces:
+                i+=1
+                if len(self.getElementsWithNodes(f))==1: #if these nodes are only connected to one element then this face is on the surface
+                    surfFaces.append(i)
+            surfElementsDic[enum]=surfFaces
+        return surfElementsDic
     
     def getSurfaceElements(self): #get all element who has a node on the surface
         surf=[]

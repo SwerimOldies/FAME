@@ -117,7 +117,7 @@ def writeMesh(mesh,filename):
     
     file.close()
 
-def writeSteps(layers,startLayer,filename,dwell,conductivity,temp,onlyHeat=False):
+def writeSteps(layers,startLayer,filename,dwell,conductivity,temp,mesh,powderTemp,onlyHeat=False):
     file=open(filename,'w')
     step=0
     for i in range(startLayer,layers+1):
@@ -136,10 +136,17 @@ layer_"""+str(i+1))
             file.write("""
 *BOUNDARY,OP=NEW
 nodeBed,1,6
-bottomNodes,1,3""")
+bottomNodes,1,3
+""")
+        #write film BC 
+        surf=mesh.getSurfaceElementsWithFaces()
+        file.write('*FILM\n')
+        for s in surf.keys():
+            for f in surf[s]:
+                if not s in mesh.esets['buildPlateElements'] and f==1:
+                    file.write(str(s)+',F'+str(f)+','+str(powderTemp)+','+str(conductivity)+'\n')
+        file.write('bottomElements,F1'+','+str(temp)+','+str(conductivity)+'\n')
         file.write("""
-*FILM
-bottomElements,F1,"""+str(temp)+""","""+str(conductivity)+"""
 *End Step""")
         if not onlyHeat:
             file.write("""
@@ -360,7 +367,7 @@ def run(parameters,name,dir_path):
     
     
     writeMesh(mesh,os.path.normpath(directory+'/geom.inp'))
-    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=os.path.normpath(directory+'/steps.inp'),dwell=dwell,conductivity=parameters['sinkCond'],temp=parameters['sinkTemp'],onlyHeat=False)
+    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=os.path.normpath(directory+'/steps.inp'),dwell=dwell,conductivity=parameters['sinkCond'],temp=parameters['sinkTemp'],onlyHeat=False,mesh=mesh,powderTemp=parameters['powderTemp'])
     return (directory,mesh)
 
 def parseInput(infilename,outfilename,parameters): #read infile and replace all parameters with actual numbers
