@@ -140,7 +140,7 @@ bottomNodes,1,3
 """)
         #write film BC 
         surf=mesh.getSurfaceElementsWithFaces()
-        file.write('*FILM\n')
+        file.write('\n*FILM\n')
         for s in surf.keys():
             for f in surf[s]:
                 if not ((s in mesh.esets['buildPlateElements']) and (f==1)): #the bottom of the build plate may have a different condition
