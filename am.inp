@@ -4,34 +4,36 @@
 ** 
 *MATERIAL,NAME=buildMat
 *ELASTIC
-#elasticCold,0.3,20
-#elasticMiddle,0.3,500
-#elasticHot,0.3,1000
+#elasticColdBuild,0.3,20
+#elasticMiddleBuild,0.3,500
+#elasticHotBuild,0.3,1000
 *CREEP
 #creepAcold,#creepncold,0,20
-#creepAmiddle,#creepnmiddle,0,500
-#creepAhot,#creepnhot,0,1000
+#creepAmiddle,#creepnmiddle,#creepmmiddle,500
+#creepAhot,#creepnhot,#creepmhot,1000
 *DENSITY
-#density
+#buildDensity
 *Specific Heat
 #specHeat,
 *Expansion
-#thermExpCold,20
-#thermExpHot,1500
+#thermExpColdBuild,20
+#thermExpHotBuild,1500
 *CONDUCTIVITY
-#conductivity,0.
+#conductivityBuild,0.
 *MATERIAL,NAME=plateMat
 *ELASTIC
-#elasticCold,0.3,20
-#elasticHot,0.3,1500
+#elasticColdPlate,0.3,20
+#elasticMiddlePlate,0.3,500
+#elasticHotPlate,0.3,1500
 *DENSITY
-#density
+#densityPlate
 *Specific Heat
 #specHeat,
 *Expansion
-#thermExpBot,20
+#thermExpColdPlate,20
+#thermExpHotPlate,1500
 *CONDUCTIVITY
-#conductivity,0.
+#conductivityPlate,0.
 *SOLID SECTION,MATERIAL=buildMat,ELSET=buildElements
 *SOLID SECTION,MATERIAL=plateMat,ELSET=buildPlateElements
 *BEAM SECTION,MATERIAL=plateMat,ELSET=beamBed,SECTION=RECT
@@ -83,7 +85,7 @@ BUILDELEMENTS
 1e-2,#coolDown,1e-10,
 *BOUNDARY,OP=NEW
 nodeBed,1,6
-*FILM
+*FILM, OP=NEW
 bottomElements,F1,20,0.005
 *NODE FILE,FREQUENCY=1000000000
  U,NT
