@@ -7,7 +7,7 @@ Section: science
 Source: https://github.com/swerea/FAME
 Architecture: all
 Priority: optional
-Depends: python3, python3-numpy, python3-pil, calculix-ccx, python3-pyqt4
+Depends: python3, python3-numpy, python3-pil, calculix-ccx, python3-pyqt4, python3-matplotlib, python3-pip
 Description: FAME   Free Additive Manufacturing Enhancer
  Takes an STL-file and simulates the AM build process using Calculix and outputs an adjusted STL-file.
 
