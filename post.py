@@ -5,6 +5,7 @@ import fea
 import re
 import sys
 import numpy as np
+#import stltovoxel.stl_reader
 from stl import mesh
 
 def readSTL(filename):
@@ -52,7 +53,7 @@ def readResults(filename,feamesh):
     file.close()
 
 
-def readGeom(filename,d1=23,d2=27):
+def readGeom(filename):
     nodes=[]
     elements=[]
     file=open(filename,'r')
@@ -101,24 +102,23 @@ def readGeom(filename,d1=23,d2=27):
             readingElementsets=True
             setname=line.split(',')[-1]
         
-    feamesh=fea.mesh(nodes,elements,d1=d1,d2=d2,margin=0.3) #create fea mesh
+    feamesh=fea.mesh(nodes,elements,d1=37,d2=41,margin=0.3) #create fea mesh
     feamesh.nsets=tempMesh.nsets
     feamesh.esets=tempMesh.esets
     return feamesh
     
 
-def adjustSTL(filename,feamesh,stlmesh,power=4,scale=1,nodes2use=10):
+def adjustSTL(filename,feamesh,stlmesh,power=4,scale=1):
     tol=1e-5
     def norm(v,n):
         sum=0
         for x in v:
             sum+=np.power(x,n)
-        
-        return np.power(sum,1/n)
+        return sum
     
     def normalize(v):
-        length=ln.norm(v,2)
-        #length=sum(v)
+        #length=ln.norm(v,2)
+        length=sum(v)
         return [x/length for x in v]
     
     import numpy.linalg as ln
@@ -159,9 +159,8 @@ def adjustSTL(filename,feamesh,stlmesh,power=4,scale=1,nodes2use=10):
         v=stlmesh.v2[i] #one vertex
         if v[0]==xmin and zmax<v[2]:
             zmax=v[2]
-    
-    
- 
+
+
     def adjust(vertex,scale=1):
         N=[] #list of node coordinates
         displacement=[] #nodal displacements        
@@ -169,37 +168,50 @@ def adjustSTL(filename,feamesh,stlmesh,power=4,scale=1,nodes2use=10):
         nodeNums+=feamesh.web2.getNodesCloseToCoord(vertex)
 
         nodeNums=fea.unique(nodeNums)
-        
         nodes=[feamesh.getNode(n) for n in nodeNums]
+        #naverage=np.array([0.0,0.0,0.0])
         for n in nodes:
             if n.coord[2]>zmax-tol: #not interested in nodes belonging to the build plate
+            #if n.coord[2]>-1000: #not interested in nodes belonging to the build plate
                 N.append((n.coord))
                 displacement.append((n.disp))
-
+                #naverage+=np.array(n.coord)
+        #naverage=naverage/len(N)
         N=np.array(N)
-
                 
         try:
             R=N-np.array(vertex) #the vectors from this vertex to all fea nodes
             Dist=ln.norm(R,2,axis=1)
         except ValueError:
-            print('Warning. Vertex=',vertex,' has no nodes')
+            print('Error. Vertex=',vertex)
             return vertex
         inf=normalize([np.power(x,power) for x in Dist]) #influence weights
         
-        
         #only use the 10 closest nodes
-        zipSorted=list(zip(*(zip(Dist,displacement,N))))
+        #zipSorted=list(zip(*sorted(zip(Dist,displacement))))
+        #zipped=zip(Dist,displacement,N)
+        zipped=zip(Dist,displacement)
+        try:
+            zipppedAndSorted=zip(*sorted(zipped))
+            zipSorted=list(zipppedAndSorted)
+        except ValueError:
+            print('Sort fail in STL adjust')
+            #zipSorted=list(zip(*(zip(Dist,displacement,N))))
+            zipSorted=list(zip(*(zip(Dist,displacement))))
         
+        nodes2use=10
         dist_short=zipSorted[0][0:nodes2use]
         disp_short=zipSorted[1][0:nodes2use]
-        N_short=zipSorted[2][0:nodes2use]
-
-
-        inf_short=[np.power(x,-power) for x in dist_short] #influence weights
-        inf_short=[i/sum(inf_short) for i in inf_short]
+        #print(dist_short)
+        #N_short=(zipSorted[2][0:1][0])
+        #disp_temp=zipSorted[1][0:15]
+        inf_short=normalize([np.power(x,power) for x in dist_short])[::-1] #influence weights
         
-        adjustment=scale*np.dot(np.array(inf_short),np.array(disp_short))        
+        #print(inf_short)
+        
+        
+        #adjustment=scale*np.dot(np.array(inf),np.array(displacement))        
+        adjustment=scale*np.dot(np.array(inf_short),np.array(disp_short)) #multiply influence weights with the node dispplacements
         
         if vertex[2]<zmax+tol: #vertices on the plate - build interface should not be adjusted in the z direction
             adjustment[2]=0
@@ -221,44 +233,33 @@ def adjustSTL(filename,feamesh,stlmesh,power=4,scale=1,nodes2use=10):
         if v[2]>zmax-tol:
             stlmesh.v2[i]=adjust(v,scale)
         
+
+    stlmesh.save(filename+'_adjusted.stl')
+    return(zmax)
     
-    stlmesh.save(filename)
-    
+
+
+
 
 if __name__ == "__main__":
-    print('FAME post processing')
-    run=True
-    import getopt
+    import getopt,math
     try:
-        opts, args = getopt.gnu_getopt(sys.argv[1:], 'r:g:n:o')
-    except getopt.GetoptError as err:
-        print(str(err))
-        run=False
-        
-    for o, a in opts:
-        print(o,a)
+        opts, args = getopt.gnu_getopt(sys.argv[1:], '')
+    except(getopt.GetoptError):
+        print('Invalid argument')
+    filename=args[0]
+    
+    print('Reading geometry')
+    
+    feamesh=readGeom('geom.inp')
+    print('Reading results')
+    readResults('am.frd',feamesh)
+    print('Reading STL')
+    stlmesh=readSTL(filename+'.stl')
+    print('Adjusting STL')
+    adjustSTL(filename,feamesh,stlmesh,scale=1,power=4)
+    
+    #print(math.pow(compare(filename,resultsfile='am.frd',feamesh=feamesh,measured='../KubeAfterGnist_standard_ascii.stl'),0.5))
 
-        if o in '-r':
-            resultsFilename=a;
-        if o in '-g':
-            geomFilename=a;
-        if o in '-n':
-            nominalFilename=a;
-            outFilename=nominalFilename[:-4]+'_adjusted.stl'
-        if o in '-o':
-            outFilename=a;
-
-            
-    #filename=args[0]
-    #print(args)
-    if(run):
-        print('Reading geometry')
-        feamesh=readGeom(geomFilename,d1=11,d2=17)
-        print('Reading results')
-        readResults(resultsFilename,feamesh)
-        print('Reading STL')
-        stlmesh=readSTL(nominalFilename)
-        print('Adjusting STL')
-        adjustSTL(outFilename,feamesh,stlmesh,scale=1,power=4)
     
     

@@ -117,7 +117,7 @@ def writeMesh(mesh,filename):
     
     file.close()
 
-def writeSteps(layers,startLayer,filename,dwell,conductivity,temp,onlyHeat=False):
+def writeSteps(layers,startLayer,filename,dwell,conductivity,temp,mesh,powderTemp,conductivityPowder,heating,onlyHeat=False,creep=True):
     file=open(filename,'w')
     step=0
     for i in range(startLayer,layers+1):
@@ -125,7 +125,7 @@ def writeSteps(layers,startLayer,filename,dwell,conductivity,temp,onlyHeat=False
         file.write("""**------------------------- Step """+str(step) +"""---------------------------------------------
 ** 
 ** 
-*Step,INC=1000
+*Step,INC=100
 *HEAT TRANSFER,DELTMX=500
 1e+0,"""+str(dwell)+""",1e-10,
 **""")
@@ -136,24 +136,37 @@ layer_"""+str(i+1))
             file.write("""
 *BOUNDARY,OP=NEW
 nodeBed,1,6
-bottomNodes,1,3""")
+bottomNodes,1,3
+*DFLUX,OP=NEW
+layer_"""+str(i+1)+',S6,'+str(heating)+"""
+""")
+        #write film BC 
+        
+        surf=mesh.getSurfaceElementsWithFaces()
+        '''
+        file.write('\n*FILM,OP=NEW\n')
+        for s in surf.keys():
+            for f in surf[s]:
+                if not ((s in mesh.esets['buildPlateElements']) and (f==1)): #the bottom of the build plate may have a different condition
+                    file.write(str(s)+',F'+str(f)+','+str(powderTemp)+','+str(conductivityPowder)+'\n')
+        ''' 
+        file.write('\n*FILM\n')          
+        file.write('bottomElements,F1'+','+str(temp)+','+str(conductivity)+'\n')
+    
         file.write("""
-*FILM
-bottomElements,F1,"""+str(temp)+""","""+str(conductivity)+"""
 *End Step""")
         if not onlyHeat:
             file.write("""
-*Step,INC=1000
+*Step,INC=100
 *STATIC,TIME RESET
 1e-0,"""+str(dwell)+""",1e-10,
-**""")
-            file.write("""
 *End Step
-*Step,INC=1000
+""")
+            if creep:
+                file.write("""*Step,INC=100
 *VISCO
-1e-2,"""+str(dwell)+""",1e-10,
-**""")
-            file.write("""
+1e-3,"""+str(dwell)+""",1e-10,
+**
 ***NODE FILE,FREQUENCY=1000000000
 ** U,NT
 ***EL FILE,FREQUENCY=1000000000
@@ -235,7 +248,6 @@ def run(parameters,name,dir_path):
                 if vol[k][i][j]==True:
                     x=(i-1)/scale[0]-shift[0]
                     y=(j-1)/scale[1]-shift[1]
-                    #z=k/scale[2]-shift[2]/scale[2]
                     z=(k-1)/scale[2]-shift[2]
                     num=mesh.createAndAddElement([x,y,z],[1/scale[0],1/scale[1],1/scale[2]])
 
@@ -296,8 +308,12 @@ def run(parameters,name,dir_path):
     
     
     bottomNodes=mesh.getNodesWithIn(-1000000000,100000000000,-1000000000,100000000000,zmin-1e-5,zmin+1e-5) #the very bottom nodes of the plate
-    layersInPlate=int(len(buildPlate)/len(bottomNodes))-1
+
+    #layersInPlate=int(len(buildPlate)/len(bottomNodes))-1
+    layersInPlate=int(np.round((zmax-zmin)*scale[2]))
+
     bottomElements=mesh.getElementsWithNodes(bottomNodes,any=True)
+    print('layersInPlate '+str(layersInPlate)+' zspan '+str(zmax-zmin)+' scale '+str(scale[2]))
     interface=list(set(buildPlate) & set(mesh.nsets['layer_'+str(layersInPlate)]))
     build=list(set(mesh.nodes)-set(buildPlate))
     buildElements=mesh.getElementsWithNodes(build,any=True)
@@ -318,10 +334,6 @@ def run(parameters,name,dir_path):
     for e in bottomElements:
         mesh.add2elset(e,'bottomElements')
         
-    '''
-    for e in topElements:
-        mesh.add2elset(e,'top')
-    '''    
     for n in build:
         mesh.add2nset(n,'build')
     
@@ -360,7 +372,7 @@ def run(parameters,name,dir_path):
     
     
     writeMesh(mesh,os.path.normpath(directory+'/geom.inp'))
-    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=os.path.normpath(directory+'/steps.inp'),dwell=dwell,conductivity=parameters['sinkCond'],temp=parameters['sinkTemp'],onlyHeat=False)
+    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=os.path.normpath(directory+'/steps.inp'),dwell=dwell,conductivityPowder=parameters['conductivityPowder'],conductivity=parameters['sinkCond'],temp=parameters['sinkTemp'],onlyHeat=False,mesh=mesh,powderTemp=parameters['powderTemp'],heating=parameters['heating'],creep=True)
     return (directory,mesh)
 
 def parseInput(infilename,outfilename,parameters): #read infile and replace all parameters with actual numbers
@@ -381,7 +393,6 @@ def calc(directory,cpus=1): #Run calculix.
     print('Solving..')
     import os
     os.chdir(directory)
-    #os.system('export OMP_NUM_THREADS='+str(cpus))
     os.environ['OMP_NUM_THREADS']=str(cpus)
     os.system('ccx am > ccx_output.txt')
     os.chdir('../')
@@ -421,6 +432,7 @@ if __name__ == "__main__":
     print('Adjusting STL')
     resultPath=os.path.relpath(directory+'/'+os.path.basename(name)[:-4]+'_adjusted.stl')
     post.adjustSTL(resultPath,mesh,stlmesh,scale=1,power=4)
+    
 
     shutil.copy(resultPath,os.path.relpath(os.path.basename(name)[:-4]+'_adjusted.stl'))
         
