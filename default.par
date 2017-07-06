@@ -8,6 +8,7 @@ conductivityPlate=16
 nu=0.30000001
 thermExpColdBuild=1.6e-05
 creepmhot=2.2778873
+creepmcold=0
 creepnhot=1.1717137
 creepmmiddle=4.0989761
 elasticColdPlate=210000.0

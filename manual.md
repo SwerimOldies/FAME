@@ -47,22 +47,32 @@ When FAME starts it reads the Calculix input file *am.inp* and replaces all para
 
 ###Material parameters
 
-* thermExpBot - thermal expansion of build plate
-* thermExpCold - thermal expansion of build at 20C
-* thermExpHot - thermal expansion of build at 1000C
+* thermExpColdPlate - thermal expansion of plate at 20C
+* thermExpColdBuild - thermal expansion of build at 20C
+* thermExpHotPlate - thermal expansion of build at 1000C
+* thermExpHotBuild - thermal expansion of build at 1000C
 * creepAcold - Norton creep parameter *A* at 20C
 * creepncold - Norton creep parameter *n* at 20C
-* creepAmiddle - Norton creep parameter *A* at 500C
-* creepnmiddle - Norton creep parameter *n* at 500C
-* creepAhot - Norton creep parameter *A* at 1000C
-* creepnhot - Norton creep parameter *n* at 1000C
-* density - material density
+* creepmcold - Norton creep parameter *m* at 20C
+* creepAmiddle - Norton creep parameter *A* at 350C
+* creepnmiddle - Norton creep parameter *n* at 350C
+* creepmmoddle - Norton creep parameter *m* at 350C
+* creepAhot - Norton creep parameter *A* at 700C
+* creepnhot - Norton creep parameter *n* at 700C
+* creepmhot - Norton creep parameter *m* at 700C
+* densityPlate - density of plate
+* buildDensity - density of build
 * specHeat - specific heat
-* elasticCold - Young's modulous at 20C
-* elasticMiddle - Young's modulous at 500C
-* elasticHot - Young's modulous at 1500C
+* elasticColdPlate - Young's modulous of plate at 20C
+* elasticMiddlePlate - Young's modulous  of plate at 500C
+* elasticHotPlate - Young's modulous of plate at 1000C
+* elasticColdBuild - Young's modulous of build at 20C
+* elasticMiddleBuild - Young's modulous  of build at 500C
+* elasticHotBuild - Young's modulous of build at 1000C
 * nu - Poisson's ratio
-* conductivity - thermal conductivity
+* conductivityPlate - thermal conductivity of the plate material
+* conductivityBuild - thermal conductivity of the build material
+
 
 
 
@@ -74,6 +84,10 @@ The available process parameters are:
 * sinkCond - film condition of bed / build plate interface
 * coolDown - time allowed for final coldness of the build
 * sinkTemp - temperature of bed
+* powderTemp - temperature of surrounding unfused powder
+* conductivityPowder - film condition of build / powder
+* heating - heat flux on the top surface
+
 
 ###Other parameters
 

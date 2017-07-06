@@ -26,7 +26,7 @@
 #elasticMiddlePlate,0.3,500
 #elasticHotPlate,0.3,1500
 *CREEP
-#creepAcold,#creepncold,0,20
+#creepAcold,#creepncold,#creepmcold,20
 #creepAmiddle,#creepnmiddle,#creepmmiddle,350
 #creepAhot,#creepnhot,#creepmhot,700
 *DENSITY
