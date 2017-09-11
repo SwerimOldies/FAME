@@ -73,9 +73,6 @@ When FAME starts it reads the Calculix input file *am.inp* and replaces all para
 * conductivityPlate - thermal conductivity of the plate material
 * conductivityBuild - thermal conductivity of the build material
 
-
-
-
 ###Process parameters
 The available process parameters are:
 
