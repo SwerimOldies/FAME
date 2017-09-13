@@ -424,15 +424,14 @@ if __name__ == "__main__":
     parameters=readParameters(parameterFilename)
     (directory,mesh)=run(parameters,name,dir_path)
     calc(directory=directory,cpus=cpus)
-    
+
     import post
-    
     post.readResults(os.path.normpath(directory+'/am.frd'),mesh)
     stlmesh=post.readSTL(name)
     print('Adjusting STL')
-    resultPath=os.path.relpath(directory+'/'+os.path.basename(name)[:-4]+'_adjusted.stl')
+    resultPath=os.path.relpath(directory+'/'+os.path.basename(name)[:-4])
     post.adjustSTL(resultPath,mesh,stlmesh,scale=1,power=4)
     
 
-    shutil.copy(resultPath,os.path.relpath(os.path.basename(name)[:-4]+'_adjusted.stl'))
+    shutil.copy(os.path.relpath(directory+'/'+os.path.basename(name)[:-4]+'_adjusted.stl'),os.path.relpath(os.path.basename(name)[:-4]+'_adjusted.stl'))
         
