@@ -55,6 +55,7 @@ buildPlate, #sinkTemp
 *BOUNDARY
 nodeBed,1,6
 bottomNodes,1,3
+*DAMPING,ALPHA=5000.,BETA=2.e-3
 *************************************************************************
 *Step,INC=1000
 *STATIC
