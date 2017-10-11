@@ -1,7 +1,7 @@
 [DEBREATE-0.7.13]
 <<CTRL>>
 Package: FAME
-Version: 0.6
+Version: 0.7
 Maintainer: Fredrik Wredenberg <fredrik.wredenberg@swerea.se>
 Section: science
 Source: https://github.com/swerea/FAME
@@ -14,21 +14,21 @@ Description: FAME   Free Additive Manufacturing Enhancer
 <</CTRL>>
 <<FILES>>
 1
-/home/fredrik/FAME/default.par -> default.par -> /opt/FAME
-/home/fredrik/FAME/FAME.py* -> FAME.py -> /opt/FAME
-/home/fredrik/FAME/LICENSE.md -> LICENSE.md -> /opt/FAME
-/home/fredrik/FAME/README.md -> README.md -> /opt/FAME
-/home/fredrik/FAME/am.inp -> am.inp -> /opt/FAME
-/home/fredrik/FAME/fea.py -> fea.py -> /opt/FAME
-/home/fredrik/FAME/post.py -> post.py -> /opt/FAME
-/home/fredrik/FAME/stltovoxel -> stltovoxel -> /opt/FAME
-/home/fredrik/FAME/testArtifact.stl -> testArtifact.stl -> /opt/FAME
-/home/fredrik/FAME/fame.png -> fame.png -> /usr/share/pixmaps/
-/home/fredrik/FAME/FAMEGUI.py* -> FAMEGUI.py -> /opt/FAME/
-/home/fredrik/FAME/settings.py -> settings.py -> /opt/FAME/
-/home/fredrik/FAME/matplotwidgetFile.py -> matplotwidgetFile.py -> /opt/FAME/
-/home/fredrik/FAME/fameQT.py* -> fameQT.py -> /opt/FAME/
 /home/fredrik/FAME/about.py -> about.py -> /opt/FAME/
+/home/fredrik/FAME/fameQT.py* -> fameQT.py -> /opt/FAME/
+/home/fredrik/FAME/matplotwidgetFile.py -> matplotwidgetFile.py -> /opt/FAME/
+/home/fredrik/FAME/settings.py -> settings.py -> /opt/FAME/
+/home/fredrik/FAME/FAMEGUI.py* -> FAMEGUI.py -> /opt/FAME/
+/home/fredrik/FAME/fame.png -> fame.png -> /usr/share/pixmaps/
+/home/fredrik/FAME/testArtifact.stl -> testArtifact.stl -> /opt/FAME
+/home/fredrik/FAME/stltovoxel -> stltovoxel -> /opt/FAME
+/home/fredrik/FAME/post.py -> post.py -> /opt/FAME
+/home/fredrik/FAME/fea.py -> fea.py -> /opt/FAME
+/home/fredrik/FAME/am.inp -> am.inp -> /opt/FAME
+/home/fredrik/FAME/README.md -> README.md -> /opt/FAME
+/home/fredrik/FAME/LICENSE.md -> LICENSE.md -> /opt/FAME
+/home/fredrik/FAME/FAME.py* -> FAME.py -> /opt/FAME
+/home/fredrik/FAME/default.par -> default.par -> /opt/FAME
 <</FILES>>
 <<SCRIPTS>>
 <<PREINST>>
