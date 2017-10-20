@@ -430,7 +430,7 @@ if __name__ == "__main__":
     stlmesh=post.readSTL(name)
     print('Adjusting STL')
     resultPath=os.path.relpath(directory+'/'+os.path.basename(name)[:-4])
-    post.adjustSTL(resultPath,mesh,stlmesh,scale=1,power=4)
+    post.adjustSTL(resultPath,mesh,stlmesh,scale=1,power=3)
     
 
     shutil.copy(os.path.relpath(directory+'/'+os.path.basename(name)[:-4]+'_adjusted.stl'),os.path.relpath(os.path.basename(name)[:-4]+'_adjusted.stl'))
