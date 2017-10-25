@@ -167,10 +167,6 @@ layer_"""+str(i+1)+',S6,'+str(heating)+"""
 *VISCO
 1e-3,"""+str(dwell)+""",1e-10,
 **
-***NODE FILE,FREQUENCY=1000000000
-** U,NT
-***EL FILE,FREQUENCY=1000000000
-** S, E ,PEEQ
 *End Step
 """)
     file.close()
@@ -226,7 +222,7 @@ C
     """)
     file.close()
     
-def run(parameters,name,dir_path):
+def run(parameters,name,dir_path,creep=True):
     import uuid
     uid=str(uuid.uuid4())
     (vol,bounding_box,scale,shift)=readVoxels(name,parameters['resolution'])
@@ -372,7 +368,7 @@ def run(parameters,name,dir_path):
     
     
     writeMesh(mesh,os.path.normpath(directory+'/geom.inp'))
-    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=os.path.normpath(directory+'/steps.inp'),dwell=dwell,conductivityPowder=parameters['conductivityPowder'],conductivity=parameters['sinkCond'],temp=parameters['sinkTemp'],onlyHeat=False,mesh=mesh,powderTemp=parameters['powderTemp'],heating=parameters['heating'],creep=True)
+    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=os.path.normpath(directory+'/steps.inp'),dwell=dwell,conductivityPowder=parameters['conductivityPowder'],conductivity=parameters['sinkCond'],temp=parameters['sinkTemp'],onlyHeat=False,mesh=mesh,powderTemp=parameters['powderTemp'],heating=parameters['heating'],creep=creep)
     return (directory,mesh)
 
 def parseInput(infilename,outfilename,parameters): #read infile and replace all parameters with actual numbers
@@ -404,6 +400,8 @@ if __name__ == "__main__":
     ------------------------------------------------
     """)
     import getopt,sys,os,shutil
+    
+    creep=True
     try:
         opts, args = getopt.gnu_getopt(sys.argv[1:], 'i:p:c:')
     except getopt.GetoptError as err:
@@ -419,10 +417,14 @@ if __name__ == "__main__":
         if o in '-c':
             cpus=int(a)
     
+    if 'nocreep' in args:
+        creep=False
+        print('No creep steps')
+    
     dir_path = os.path.dirname(os.path.realpath(__file__)) #directory where the FAME.py file resides
 
     parameters=readParameters(parameterFilename)
-    (directory,mesh)=run(parameters,name,dir_path)
+    (directory,mesh)=run(parameters,name,dir_path,creep)
     calc(directory=directory,cpus=cpus)
 
     import post
