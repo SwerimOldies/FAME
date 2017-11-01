@@ -195,36 +195,6 @@ def readParameters(filename):
         
     return(parameters)
     
-
-def writeField(filename,startCoord,speed):
-    file=open(filename,'w')
-    file.write("""      SUBROUTINE UFIELD(FIELD,KFIELD,NSECPT,KSTEP,KINC,TIME,NODE,
-     1 COORDS,TEMP,DTEMP,NFIELD)
-C
-      INCLUDE 'ABA_PARAM.INC'
-C
-      DIMENSION FIELD(NSECPT,NFIELD), TIME(2), COORDS(3),
-     1 TEMP(NSECPT), DTEMP(NSECPT)
-C 
-      BC = """+str(startCoord)+"""
-      V = """+str(speed)+"""
-      FIELD(1,1) = 1.0
-      HT=V*TIME(2)+BC
-      IF ( HT.GT.COORDS(3) ) THEN
-       FIELD(1,1) = 0.0
-      END IF
-
-      IF (NODE.EQ.2622) THEN
-       WRITE(7,*) '-------------------------------------------------'
-       WRITE(7,*) FIELD(1,1)
-       WRITE(7,*) COORDS(3),TIME(2),HT
-       WRITE(7,*) NSECPT,NFIELD
-      END IF
-
-      RETURN
-      END
-    """)
-    file.close()
     
 def run(parameters,name,dir_path):
     import uuid
@@ -309,7 +279,6 @@ def run(parameters,name,dir_path):
     
     bottomNodes=mesh.getNodesWithIn(-1000000000,100000000000,-1000000000,100000000000,zmin-1e-5,zmin+1e-5) #the very bottom nodes of the plate
 
-    #layersInPlate=int(len(buildPlate)/len(bottomNodes))-1
     layersInPlate=int(np.round((zmax-zmin)*scale[2]))
 
     bottomElements=mesh.getElementsWithNodes(bottomNodes,any=True)
@@ -372,7 +341,7 @@ def run(parameters,name,dir_path):
     
     
     writeMesh(mesh,os.path.normpath(directory+'/geom.inp'))
-    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=os.path.normpath(directory+'/steps.inp'),dwell=dwell,conductivityPowder=parameters['conductivityPowder'],conductivity=parameters['sinkCond'],temp=parameters['sinkTemp'],onlyHeat=False,mesh=mesh,powderTemp=parameters['powderTemp'],heating=parameters['heating'],creep=True)
+    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=os.path.normpath(directory+'/steps.inp'),dwell=dwell,conductivityPowder=parameters['conductivityPowder'],conductivity=parameters['sinkCond'],temp=parameters['sinkTemp'],onlyHeat=False,mesh=mesh,powderTemp=parameters['powderTemp'],heating=parameters['heating'],creep=False)
     return (directory,mesh)
 
 def parseInput(infilename,outfilename,parameters): #read infile and replace all parameters with actual numbers

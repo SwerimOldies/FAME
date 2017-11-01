@@ -1,7 +1,7 @@
 [DEBREATE-0.7.13]
 <<CTRL>>
 Package: FAME
-Version: 0.7
+Version: 0.72
 Maintainer: Fredrik Wredenberg <fredrik.wredenberg@swerea.se>
 Section: science
 Source: https://github.com/swerea/FAME
