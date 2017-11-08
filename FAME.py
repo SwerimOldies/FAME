@@ -337,11 +337,8 @@ def run(parameters,name,dir_path,creep=True):
     
     
     writeMesh(mesh,os.path.normpath(directory+'/geom.inp'))
-<<<<<<< HEAD
-    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=os.path.normpath(directory+'/steps.inp'),dwell=dwell,conductivityPowder=parameters['conductivityPowder'],conductivity=parameters['sinkCond'],temp=parameters['sinkTemp'],onlyHeat=False,mesh=mesh,powderTemp=parameters['powderTemp'],heating=parameters['heating'],creep=False)
-=======
     writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=os.path.normpath(directory+'/steps.inp'),dwell=dwell,conductivityPowder=parameters['conductivityPowder'],conductivity=parameters['sinkCond'],temp=parameters['sinkTemp'],onlyHeat=False,mesh=mesh,powderTemp=parameters['powderTemp'],heating=parameters['heating'],creep=creep)
->>>>>>> 14886513630843c97aa9da26fea7002046dcb6e6
+
     return (directory,mesh)
 
 def parseInput(infilename,outfilename,parameters): #read infile and replace all parameters with actual numbers
@@ -390,9 +387,15 @@ if __name__ == "__main__":
         if o in '-c':
             cpus=int(a)
     
-    if 'nocreep' in args:
+    if '--nocreep' in args:
         creep=False
         print('No creep steps')
+    
+    if '--noadjust' in args:
+        scale=-1
+    else:
+        scale=1
+
     
     dir_path = os.path.dirname(os.path.realpath(__file__)) #directory where the FAME.py file resides
 
@@ -405,7 +408,7 @@ if __name__ == "__main__":
     stlmesh=post.readSTL(name)
     print('Adjusting STL')
     resultPath=os.path.relpath(directory+'/'+os.path.basename(name)[:-4])
-    post.adjustSTL(resultPath,mesh,stlmesh,scale=1,power=3)
+    post.adjustSTL(resultPath,mesh,stlmesh,scale=scale,power=3)
     
 
     shutil.copy(os.path.relpath(directory+'/'+os.path.basename(name)[:-4]+'_adjusted.stl'),os.path.relpath(os.path.basename(name)[:-4]+'_adjusted.stl'))
