@@ -125,7 +125,7 @@ def writeSteps(layers,startLayer,filename,dwell,conductivity,temp,mesh,powderTem
         file.write("""**------------------------- Step """+str(step) +"""---------------------------------------------
 ** 
 ** 
-*Step,INC=100
+*Step,INC=1000
 *HEAT TRANSFER,DELTMX=500
 1e+0,"""+str(dwell)+""",1e-10,
 **""")
@@ -136,7 +136,7 @@ layer_"""+str(i+1))
             file.write("""
 *BOUNDARY,OP=NEW
 nodeBed,1,6
-bottomNodes,1,3
+**bottomNodes,1,3
 *DFLUX,OP=NEW
 layer_"""+str(i+1)+',S6,'+str(heating)+"""
 """)
@@ -157,13 +157,13 @@ layer_"""+str(i+1)+',S6,'+str(heating)+"""
 *End Step""")
         if not onlyHeat:
             file.write("""
-*Step,INC=100
+*Step,INC=1000
 *STATIC,TIME RESET
 1e-0,"""+str(dwell)+""",1e-10,
 *End Step
 """)
             if creep:
-                file.write("""*Step,INC=100
+                file.write("""*Step,INC=1000
 *VISCO
 1e-3,"""+str(dwell)+""",1e-10,
 **
@@ -387,11 +387,11 @@ if __name__ == "__main__":
         if o in '-c':
             cpus=int(a)
     
-    if '--nocreep' in args:
+    if 'nocreep' in args:
         creep=False
         print('No creep steps')
     
-    if '--noadjust' in args:
+    if 'noadjust' in args:
         scale=-1
     else:
         scale=1

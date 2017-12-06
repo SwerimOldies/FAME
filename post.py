@@ -169,7 +169,7 @@ def adjustSTL(filename,feamesh,stlmesh,power=4,scale=1):
         nodes=[feamesh.getNode(n) for n in nodeNums]
 
         for n in nodes:
-            if n.coord[2]>zmax-tol: #not interested in nodes belonging to the build plate
+            if (n.coord[2]>zmax-tol) or scale==-1: #Not interested in nodes belonging to the build plate. If scale=-1 we want to see how everything deforms
                 N.append((n.coord))
                 displacement.append((n.disp))
 
