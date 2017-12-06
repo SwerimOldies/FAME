@@ -126,7 +126,7 @@ def writeSteps(layers,startLayer,filename,dwell,conductivity,temp,mesh,powderTem
 ** 
 ** 
 *Step,INC=1000
-*HEAT TRANSFER,DELTMX=500
+*Static
 1e+0,"""+str(dwell)+""",1e-10,
 **""")
         file.write("""
@@ -134,32 +134,23 @@ def writeSteps(layers,startLayer,filename,dwell,conductivity,temp,mesh,powderTem
 layer_"""+str(i+1))
         if i < layers: #dont do this for more layers than exist in model
             file.write("""
-*BOUNDARY,OP=NEW
+*BOUNDARY
 nodeBed,1,6
 **bottomNodes,1,3
-*DFLUX,OP=NEW
-layer_"""+str(i+1)+',S6,'+str(heating)+"""
 """)
+
         #write film BC 
         
-        surf=mesh.getSurfaceElementsWithFaces()
-        '''
-        file.write('\n*FILM,OP=NEW\n')
-        for s in surf.keys():
-            for f in surf[s]:
-                if not ((s in mesh.esets['buildPlateElements']) and (f==1)): #the bottom of the build plate may have a different condition
-                    file.write(str(s)+',F'+str(f)+','+str(powderTemp)+','+str(conductivityPowder)+'\n')
-        ''' 
-        file.write('\n*FILM\n')          
-        file.write('bottomElements,F1'+','+str(temp)+','+str(conductivity)+'\n')
-    
         file.write("""
 *End Step""")
         if not onlyHeat:
             file.write("""
 *Step,INC=1000
-*STATIC,TIME RESET
+*STATIC
 1e-0,"""+str(dwell)+""",1e-10,
+*BOUNDARY
+**nodeBed,1,6
+layer_"""+str(i)+""",11,11,"""+str(20)+"""
 *End Step
 """)
             if creep:
