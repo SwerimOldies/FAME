@@ -399,6 +399,7 @@ if __name__ == "__main__":
     
     dir_path = os.path.dirname(os.path.realpath(__file__)) #directory where the FAME.py file resides
 
+    print('creep',creep)
     parameters=readParameters(parameterFilename)
     (directory,mesh)=run(parameters,name,dir_path,creep)
     calc(directory=directory,cpus=cpus)
