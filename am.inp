@@ -9,8 +9,8 @@
 #elasticHotBuild,0.3,1000
 *CREEP
 #creepAcold,#creepncold,#creepmcold,20
-#creepAmiddle,#creepnmiddle,#creepmmiddle,350
-#creepAhot,#creepnhot,#creepmhot,700
+#creepAmiddle,#creepnmiddle,#creepmmiddle,500
+#creepAhot,#creepnhot,#creepmhot,1000
 *DENSITY
 #buildDensity
 *Specific Heat
@@ -24,11 +24,11 @@
 *ELASTIC
 #elasticColdPlate,0.3,20
 #elasticMiddlePlate,0.3,500
-#elasticHotPlate,0.3,1500
+#elasticHotPlate,0.3,1000
 *CREEP
 #creepAcold,#creepncold,#creepmcold,20
-#creepAmiddle,#creepnmiddle,#creepmmiddle,350
-#creepAhot,#creepnhot,#creepmhot,700
+#creepAmiddle,#creepnmiddle,#creepmmiddle,500
+#creepAhot,#creepnhot,#creepmhot,10000
 *DENSITY
 #densityPlate
 *Specific Heat

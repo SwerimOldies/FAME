@@ -122,21 +122,28 @@ def writeSteps(layers,startLayer,filename,dwell,conductivity,temp,mesh,powderTem
     step=0
     for i in range(startLayer,layers+1):
         step+=3
-        file.write("""**------------------------- Step """+str(step) +"""---------------------------------------------
+        file.write("""**------------------------- Step """+str(step) +"""---------------------------------------------""")
+        file.write("""
+*Step,INC=1000
+*VISCO,CETOL=1e-1
+1e-4,"""+str(dwell)+""",1e-10,
+**
+""")
+        file.write("""
+*MODEL CHANGE,TYPE=ELEMENT,ADD 
+layer_"""+str(i+1))
+        
+        file.write("""
+*End Step
 ** 
 ** 
 *Step,INC=1000
 *HEAT TRANSFER,DELTMX=500
-1e+0,"""+str(dwell)+""",1e-10,
+1e-2,"""+str(dwell)+""",1e-10,
 **""")
-        file.write("""
-*MODEL CHANGE,TYPE=ELEMENT,ADD 
-layer_"""+str(i+1))
+
         if i < layers: #dont do this for more layers than exist in model
             file.write("""
-*BOUNDARY,OP=NEW
-nodeBed,1,6
-**bottomNodes,1,3
 *DFLUX,OP=NEW
 layer_"""+str(i+1)+',S6,'+str(heating)+"""
 """)
@@ -162,13 +169,7 @@ layer_"""+str(i+1)+',S6,'+str(heating)+"""
 1e-0,"""+str(dwell)+""",1e-10,
 *End Step
 """)
-            if creep:
-                file.write("""*Step,INC=1000
-*VISCO
-1e-3,"""+str(dwell)+""",1e-10,
-**
-*End Step
-""")
+ 
     file.close()
     
 def readParameters(filename):
