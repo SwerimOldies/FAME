@@ -1,5 +1,5 @@
 comment=parameters determined from STL build of the testArtifact
-resolution=50
+resolution=30
 speed=0.00089999998
 sinkTemp=200.0
 nu=0.30000001

@@ -119,9 +119,9 @@ def writeMesh(mesh,filename):
 
 def writeSteps(layers,startLayer,filename,dwell,temp,mesh):
     file=open(filename,'w')
-    step=0
+    step=2
     for i in range(startLayer,layers+1):
-        step+=3
+        step+=1
         file.write("""**------------------------- Step """+str(step) +"""---------------------------------------------
 ** 
 ** 
@@ -334,7 +334,7 @@ def calc(directory,cpus=1): #Run calculix.
     import os
     os.chdir(directory)
     os.environ['OMP_NUM_THREADS']=str(cpus)
-    os.system('ccx am > ccx_output.txt')
+    os.system('ccx_2.13.1 am > ccx_output.txt')
     os.chdir('../')
     
 if __name__ == "__main__":
