@@ -117,7 +117,7 @@ def writeMesh(mesh,filename):
     
     file.close()
 
-def writeSteps(layers,startLayer,filename,dwell,conductivity,temp,mesh,powderTemp,conductivityPowder,heating,onlyHeat=False,creep=True):
+def writeSteps(layers,startLayer,filename,dwell,temp,mesh):
     file=open(filename,'w')
     step=0
     for i in range(startLayer,layers+1):
@@ -126,40 +126,23 @@ def writeSteps(layers,startLayer,filename,dwell,conductivity,temp,mesh,powderTem
 ** 
 ** 
 *Step,INC=1000
-*Static
+*STATIC
 1e+0,"""+str(dwell)+""",1e-10,
 **""")
         file.write("""
-*MODEL CHANGE,TYPE=ELEMENT,ADD 
+*MODEL CHANGE,TYPE=ELEMENT,ADD=STRAINFREE
 layer_"""+str(i+1))
         if i < layers: #dont do this for more layers than exist in model
             file.write("""
-*BOUNDARY
-nodeBed,1,6
-**bottomNodes,1,3
 """)
-
-        #write film BC 
-        
         file.write("""
-*End Step""")
-        if not onlyHeat:
-            file.write("""
-*Step,INC=1000
-*STATIC
-1e-0,"""+str(dwell)+""",1e-10,
-*BOUNDARY
-**nodeBed,1,6
-layer_"""+str(i)+""",11,11,"""+str(20)+"""
+*TEMPERATURE
+layer_"""+str(i+1)+','+str(temp))
+        file.write("""
 *End Step
 """)
-            if creep:
-                file.write("""*Step,INC=1000
-*VISCO
-1e-3,"""+str(dwell)+""",1e-10,
-**
-*End Step
-""")
+        
+            
     file.close()
     
 def readParameters(filename):
@@ -328,7 +311,7 @@ def run(parameters,name,dir_path,creep=True):
     
     
     writeMesh(mesh,os.path.normpath(directory+'/geom.inp'))
-    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=os.path.normpath(directory+'/steps.inp'),dwell=dwell,conductivityPowder=parameters['conductivityPowder'],conductivity=parameters['sinkCond'],temp=parameters['sinkTemp'],onlyHeat=False,mesh=mesh,powderTemp=parameters['powderTemp'],heating=parameters['heating'],creep=creep)
+    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=os.path.normpath(directory+'/steps.inp'),dwell=dwell,temp=parameters['sinkTemp'],mesh=mesh)
 
     return (directory,mesh)
 
