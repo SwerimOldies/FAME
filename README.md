@@ -22,5 +22,5 @@ There are two executables. FAME and FAMEGUI. The first is CLI and the latter has
 * python3-pil (already installed with ubuntu)
 * python3-numpy
 * numpy-stl (installed with pip3)
-* calculix-ccx
+* calculix-ccx v 2.13.1
 * pyqt4

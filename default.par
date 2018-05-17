@@ -1,20 +1,21 @@
-comment=parameters determined from STL build of the testArtifact
-resolution=30
+comment=parameters determined from EBM build of the testArtifact
 speed=0.00089999998
-sinkTemp=200.0
-nu=0.30000001
-thermExpPlate=1.6e-05
-thermExpBuild=1.6e-05
+densityPlate=7.9899998e-09
+elasticBuild=190000.0
 elasticPlate=210000.0
-elasticBuild=210000.0
-yieldBuild=170
-utsBuild=495
-utsStrainBuild=0.4
 yieldPlate=170
 utsPlate=495
-utsStrainPlate=0.4
-densityPlate=7.9899998e-09
+yieldBuild=900
+utsBuild=1035
+utsStrainPlate=0.40000001
+utsStrainBuild=0.40000001
+resolution=120
+thermExpPlate=2.72e-05
+solidify=1000.0
+thermExpBuild22=2.2099999e-05
+nu=0.30000001
+sinkTemp=80
+dwell=3896.0532788244373
+thermExpBuild11=2.2099999e-05
 densityBuild=7.9899998e-09
-solidify=300.0
-
-
+thermExpBuild33=2.2099999e-05

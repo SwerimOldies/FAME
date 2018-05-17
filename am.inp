@@ -11,7 +11,9 @@
 *DENSITY
 #densityBuild
 *Expansion
-#thermExpBuild
+#thermExpBuild11
+**#thermExpBuild22
+**#thermExpBuild33
 *MATERIAL,NAME=plateMat
 *ELASTIC
 #elasticPlate,0.3
@@ -33,8 +35,8 @@ build, #solidify
 buildPlate, #sinkTemp
 *BOUNDARY
 nodeBed,1,6
-bottomNodes,1,3
-*DAMPING,ALPHA=5000.,BETA=2.e-3
+**bottomNodes,1,3
+**DAMPING,ALPHA=5000.,BETA=2.e-3
 *************************************************************************
 *Step,INC=1000
 *STATIC
@@ -55,7 +57,7 @@ bottomNodes,1,3
 BUILDELEMENTS
 *NODE FILE,FREQUENCY=100000000
  U,NT
-*EL FILE,FREQUENCY=100000000
+*EL FILE,FREQUENCY=1000000000
  S, E,ENER,PEEQ
 *END STEP
 ******************************************
@@ -67,7 +69,7 @@ BUILDELEMENTS
 ** 
 *Step,INC=10000
 *STATIC
-1e-0,1,1e-50,
+1e-1,1,1e-50,
 *TEMPERATURE
 build,20
 buildPlate,20
@@ -79,11 +81,11 @@ buildPlate,20
 **Removal of plate
 *Step,INC=10000
 *STATIC
-1e-2,1,1e-50,
+1e-4,1,1e-50,
 *MODEL CHANGE,TYPE=ELEMENT,REMOVE
 BUILDPLATEELEMENTS
 *NODE FILE,FREQUENCY=100000000
- U,NT
+U,NT
 *EL FILE,FREQUENCY=100000000
- S, E,PEEQ
+S, E,PEEQ
 *End Step

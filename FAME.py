@@ -117,30 +117,42 @@ def writeMesh(mesh,filename):
     
     file.close()
 
-def writeSteps(layers,startLayer,filename,dwell,temp,mesh):
+def writeSteps(layers,startLayer,filename,dwell,temp,mesh,creep=False):
     file=open(filename,'w')
-    step=2
-    for i in range(startLayer,layers+1):
+    step=1
+    for i in range(startLayer,layers+2):
         step+=1
         file.write("""**------------------------- Step """+str(step) +"""---------------------------------------------
 ** 
 ** 
 *Step,INC=1000
-*STATIC
-1e+0,"""+str(dwell)+""",1e-10,
+*STATIC,NLGEOM
+1e-8,"""+str(dwell)+""",1e-10,
 **""")
-        file.write("""
+        if i < layers+1: #dont do this for more layers than exist in model
+            file.write("""
 *MODEL CHANGE,TYPE=ELEMENT,ADD=STRAINFREE
 layer_"""+str(i+1))
-        if i < layers: #dont do this for more layers than exist in model
+
+        
             file.write("""
 """)
-        file.write("""
+        if i > startLayer:
+            file.write("""
 *TEMPERATURE
-layer_"""+str(i+1)+','+str(temp))
+layer_"""+str(i)+','+str(temp))
         file.write("""
 *End Step
 """)
+        if creep:
+            file.write("""*Step,INC=1000
+*VISCO,CETOL=1e-3
+1e-3,"""+str(dwell)+""",1e-10,
+**
+*End Step
+""")
+    if creep:
+        step+=1
         
             
     file.close()
@@ -252,7 +264,7 @@ def run(parameters,name,dir_path,creep=True):
     layersInPlate=int(np.round((zmax-zmin)*scale[2]))
 
     bottomElements=mesh.getElementsWithNodes(bottomNodes,any=True)
-    print('layersInPlate '+str(layersInPlate)+' zspan '+str(zmax-zmin)+' scale '+str(scale[2]))
+    
     interface=list(set(buildPlate) & set(mesh.nsets['layer_'+str(layersInPlate)]))
     build=list(set(mesh.nodes)-set(buildPlate))
     buildElements=mesh.getElementsWithNodes(build,any=True)
@@ -300,7 +312,7 @@ def run(parameters,name,dir_path,creep=True):
         os.makedirs(directory)
         cwd=os.getcwd()
 
-    
+    parameters['dwell']=dwell
     parseInput(os.path.normpath(dir_path+'/am.inp'),os.path.normpath(directory+'/am.inp'),parameters)
     shutil.copy(os.path.normpath(name),os.path.normpath(directory+'/'))
     
@@ -311,7 +323,7 @@ def run(parameters,name,dir_path,creep=True):
     
     
     writeMesh(mesh,os.path.normpath(directory+'/geom.inp'))
-    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=os.path.normpath(directory+'/steps.inp'),dwell=dwell,temp=parameters['sinkTemp'],mesh=mesh)
+    writeSteps(layers=totalLayers-4,startLayer=layersInPlate-1,filename=os.path.normpath(directory+'/steps.inp'),dwell=dwell,temp=parameters['sinkTemp'],mesh=mesh,creep=creep)
 
     return (directory,mesh)
 
@@ -340,7 +352,7 @@ def calc(directory,cpus=1): #Run calculix.
 if __name__ == "__main__":
     print("""
     ------------------------------------------------
-    |                    FAME                      |
+    |                    FAME - strain free        |
     ------------------------------------------------
     """)
     import getopt,sys,os,shutil
