@@ -352,12 +352,12 @@ def calc(directory,cpus=1): #Run calculix.
 if __name__ == "__main__":
     print("""
     ------------------------------------------------
-    |                    FAME - strain free        |
+    |                    FAME                      |
     ------------------------------------------------
     """)
     import getopt,sys,os,shutil
     
-    creep=True
+    creep=False
     try:
         opts, args = getopt.gnu_getopt(sys.argv[1:], 'i:p:c:')
     except getopt.GetoptError as err:
@@ -373,8 +373,8 @@ if __name__ == "__main__":
         if o in '-c':
             cpus=int(a)
     
-    if 'nocreep' in args:
-        creep=False
+    if 'creep' in args:
+        creep=True
         print('No creep steps')
     
     if 'noadjust' in args:
