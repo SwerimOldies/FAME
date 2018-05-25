@@ -346,7 +346,7 @@ def calc(directory,cpus=1): #Run calculix.
     import os
     os.chdir(directory)
     os.environ['OMP_NUM_THREADS']=str(cpus)
-    os.system('ccx_2.13.1 am > ccx_output.txt')
+    os.system('ccx_fame am > ccx_output.txt')
     os.chdir('../')
     
 if __name__ == "__main__":
