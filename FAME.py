@@ -122,7 +122,7 @@ def writeSteps(layers,startLayer,filename,dwell,temp,mesh,creep=False):
     step=1
     for i in range(startLayer,layers+2):
         step+=1
-        file.write("""**------------------------- Step """+str(step-1) +"""---------------------------------------------
+        file.write("""**------------------------- Step """+str(step+1) +"""---------------------------------------------
 ** 
 ** 
 *Step,INC=1000
