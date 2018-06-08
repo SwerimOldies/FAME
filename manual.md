@@ -47,44 +47,26 @@ When FAME starts it reads the Calculix input file *am.inp* and replaces all para
 
 ###Material parameters
 
-* thermExpColdPlate - thermal expansion of plate at 20C
-* thermExpColdBuild - thermal expansion of build at 20C
-* thermExpHotPlate - thermal expansion of build at 1000C
-* thermExpHotBuild - thermal expansion of build at 1000C
-* creepAcold - Norton creep parameter *A* at 20C
-* creepncold - Norton creep parameter *n* at 20C
-* creepmcold - Norton creep parameter *m* at 20C
-* creepAmiddle - Norton creep parameter *A* at 350C
-* creepnmiddle - Norton creep parameter *n* at 350C
-* creepmmoddle - Norton creep parameter *m* at 350C
-* creepAhot - Norton creep parameter *A* at 700C
-* creepnhot - Norton creep parameter *n* at 700C
-* creepmhot - Norton creep parameter *m* at 700C
+* thermExpBuild11 - thermal expansion of build
+* thermExpPlate - thermal expansion of plate
 * densityPlate - density of plate
 * buildDensity - density of build
-* specHeat - specific heat
-* elasticColdPlate - Young's modulous of plate at 20C
-* elasticMiddlePlate - Young's modulous  of plate at 500C
-* elasticHotPlate - Young's modulous of plate at 1000C
-* elasticColdBuild - Young's modulous of build at 20C
-* elasticMiddleBuild - Young's modulous  of build at 500C
-* elasticHotBuild - Young's modulous of build at 1000C
+* elasticPlate - Young's modulous of plate
+* elasticBuild - Young's modulous of build
 * nu - Poisson's ratio
-* conductivityPlate - thermal conductivity of the plate material
-* conductivityBuild - thermal conductivity of the build material
+* yieldPlate - Initial yield of plate
+* utsPlate=495 - Ultimate tensile strength of plate
+* yieldBuild - Initial yield of build
+* utsBuild - Ultimate tensile strength of build
+* utsStrainPlate - Strain at UTS of plate
+* utsStrainBuild - Strain at UTS of build
 
 ###Process parameters
 The available process parameters are:
 
 * speed -   the build speed i.e. how fast the component grows in the vertical direction.
 * solidify - the temperature of the activated elements
-* sinkCond - film condition of bed / build plate interface
-* coolDown - time allowed for final coldness of the build
 * sinkTemp - temperature of bed
-* powderTemp - temperature of surrounding unfused powder
-* conductivityPowder - film condition of build / powder
-* heating - heat flux on the top surface
-
 
 ###Other parameters
 
