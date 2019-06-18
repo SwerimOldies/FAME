@@ -10,8 +10,8 @@
 #utsBuild,#utsStrainBuild
 *DENSITY
 #densityBuild
-*Expansion
-#thermExpBuild11
+*Expansion,TYPE=ORTHO
+#thermExpBuild11,#thermExpBuild22,#thermExpBuild33
 *MATERIAL,NAME=plateMat
 *ELASTIC
 #elasticPlate,0.3
@@ -33,7 +33,7 @@ build, #solidify
 buildPlate, #sinkTemp
 *BOUNDARY
 nodeBed,1,6
-**bottomNodes,1,3
+*bottomNodes,1,3
 *************************************************************************
 *Step,INC=1000
 *STATIC

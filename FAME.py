@@ -127,7 +127,7 @@ def writeSteps(layers,startLayer,filename,dwell,temp,mesh,creep=False):
 ** 
 *Step,INC=1000
 *STATIC,NLGEOM
-1e-8,"""+str(dwell)+""",1e-10,
+1e-5,"""+str(dwell)+""",1e-10,
 **""")
         if i < layers+1: #dont do this for more layers than exist in model
             file.write("""
@@ -346,7 +346,7 @@ def calc(directory,cpus=1): #Run calculix.
     import os
     os.chdir(directory)
     os.environ['OMP_NUM_THREADS']=str(cpus)
-    os.system('ccx_fame am > ccx_output.txt')
+    os.system('ccx am > ccx_output.txt')
     os.chdir('../')
     
 if __name__ == "__main__":
@@ -369,7 +369,7 @@ if __name__ == "__main__":
         if o in '-i':
             name=a
         if o in '-p':
-            parameterFilename=a;
+            parameterFilename=a
         if o in '-c':
             cpus=int(a)
     

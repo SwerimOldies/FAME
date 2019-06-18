@@ -17,5 +17,7 @@ nu=0.30000001
 sinkTemp=700
 dwell=3896.0532788244373
 thermExpBuild11=2.2099999e-05
+thermExpBuild22=2.2099999e-05
+thermExpBuild33=2.2099999e-05
 densityBuild=7.9899998e-09
 thermExpBuild33=2.2099999e-05
