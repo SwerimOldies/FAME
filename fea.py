@@ -45,7 +45,7 @@ class node:
         self.num=num
         self.disp=[0,0,0]
         self.temp=0
-    def getDefCoord():
+    def getDefCoord(self):
         return np.add(self.coord,self.disp)
         
 class element:
@@ -207,6 +207,34 @@ class mesh:
                 else:
                     self.elemWithNode[n].append(e.num)
 
+    def translate(self,translation):
+        ''' Translate mesh 
+        
+        Args:
+        translation (list): translation vector
+        
+        '''
+        for n in self.nodes.values():
+            n.coord[0]=n.coord[0]+translation[0]
+            n.coord[1]=n.coord[1]+translation[1]
+            n.coord[2]=n.coord[2]+translation[2]
+    
+    def rotate(self,angle,axis):
+        ''' Rotate mesh
+
+        Args:
+        angle (float): angle of rotation
+        axis (string): axis of rotation i.e. 'x','y' or 'z'
+
+        '''
+        if axis=='x':
+            R=np.matrix([[1,0,0],[0,np.cos(angle),-np.sin(angle)],[0,np.sin(angle),np.cos(angle)]])
+        else:
+            print('Error. Not implemented yet')
+        for n in self.nodes.values():
+            n.coord=(np.matmul(R,np.matrix(n.coord).transpose())).flatten().tolist()[0]
+
+        
 
     def createWebofSectors(self,d1=13,d2=17,margin=0):
         x=[n.coord[0] for n in self.nodes.values()]
